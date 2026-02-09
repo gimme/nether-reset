@@ -16,9 +16,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ItemTeleportMixin {
 
     @Inject(method = "canTeleport", at = @At("HEAD"), cancellable = true)
-    private void preventItemsFromTeleportingFromOrToNether(Level fromLevel, Level toLevel, CallbackInfoReturnable<Boolean> cir) {
+    private void preventEntitiesFromTeleportingToOrFromNether(Level fromLevel, Level toLevel, CallbackInfoReturnable<Boolean> cir) {
         if (fromLevel.dimension() == toLevel.dimension()) return;
         if (fromLevel.dimension() != Level.NETHER && toLevel.dimension() != Level.NETHER) return;
+
+        if (toLevel.dimension() == Level.NETHER && Main.INSTANCE.getServerConfig().allowTeleportToNether()) return;
+        if (fromLevel.dimension() == Level.NETHER && Main.INSTANCE.getServerConfig().allowTeleportFromNether()) return;
 
         Entity instance = (Entity) (Object) this;
         if (instance.getType() == EntityType.ITEM) {
