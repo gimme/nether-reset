@@ -15,7 +15,7 @@ public class FabricAttachmentAccessor implements PlayerAttachmentAccessor {
 
     @Override
     public DimInvData getOrCreateDimInvData(ServerPlayer player) {
-        return player.getAttachedOrCreate(dimInvAttachment, DimInvData::empty);
+        return player.getAttachedOrCreate(dimInvAttachment);
     }
 
     @Override

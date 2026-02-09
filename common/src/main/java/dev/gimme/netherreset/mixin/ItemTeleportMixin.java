@@ -17,17 +17,19 @@ public class ItemTeleportMixin {
 
     @Inject(method = "canTeleport", at = @At("HEAD"), cancellable = true)
     private void preventEntitiesFromTeleportingToOrFromNether(Level fromLevel, Level toLevel, CallbackInfoReturnable<Boolean> cir) {
+        Entity instance = (Entity) (Object) this;
+
+        if (instance.getType() == EntityType.PLAYER) return;
         if (fromLevel.dimension() == toLevel.dimension()) return;
         if (fromLevel.dimension() != Level.NETHER && toLevel.dimension() != Level.NETHER) return;
 
-        if (toLevel.dimension() == Level.NETHER && Main.INSTANCE.getServerConfig().allowTeleportToNether()) return;
-        if (fromLevel.dimension() == Level.NETHER && Main.INSTANCE.getServerConfig().allowTeleportFromNether()) return;
+        if (toLevel.dimension() == Level.NETHER && Main.INSTANCE.getServerConfig().allowEntitiesTeleportToNether()) return;
+        if (fromLevel.dimension() == Level.NETHER && Main.INSTANCE.getServerConfig().allowEntitiesTeleportFromNether()) return;
 
-        Entity instance = (Entity) (Object) this;
         if (instance.getType() == EntityType.ITEM) {
             if (!Main.INSTANCE.getServerConfig().preventItemsFromTeleporting()) return;
-        } else if (instance.getType() != EntityType.PLAYER) {
-            if (!Main.INSTANCE.getServerConfig().preventEntitiesFromTeleporting()) return;
+        } else {
+            if (!Main.INSTANCE.getServerConfig().preventOtherEntitiesFromTeleporting()) return;
         }
 
         cir.setReturnValue(false);

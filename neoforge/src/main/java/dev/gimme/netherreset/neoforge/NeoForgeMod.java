@@ -41,6 +41,6 @@ public class NeoForgeMod {
     @SubscribeEvent
     public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        Main.INSTANCE.getPlayerHandler().onPlayerRespawn(player);
+        Main.INSTANCE.getPlayerHandler().onPlayerRespawn(player, event.isEndConquered());
     }
 }

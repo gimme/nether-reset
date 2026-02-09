@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added config for starter items when entering the Nether for the first time
+
+### Fixed
+
+- Fixed some edge cases
+
 ## [v1.21.11-0.1.0] - 2026-02-08
 
 ### Added

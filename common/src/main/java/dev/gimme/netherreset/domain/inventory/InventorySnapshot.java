@@ -20,6 +20,10 @@ public record InventorySnapshot(
         return new InventorySnapshot(List.of());
     }
 
+    public static InventorySnapshot of(List<ItemStack> items) {
+        return new InventorySnapshot(items);
+    }
+
     public static InventorySnapshot fromPlayer(ServerPlayer player) {
         var inv = player.getInventory();
 

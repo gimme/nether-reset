@@ -24,7 +24,7 @@ public class Main {
     private Main(Path configDir, PlayerAttachmentAccessor playerAttachmentAccessor) {
         NightServerConfig.SPEC.init(configDir, Constants.MOD_ID + "-server.toml");
         this.serverConfig = new NightServerConfig();
-        this.playerHandler = new PlayerHandler(new InventoryManager(playerAttachmentAccessor));
+        this.playerHandler = new PlayerHandler(new InventoryManager(playerAttachmentAccessor, serverConfig));
     }
 
     public ServerConfig getServerConfig() {

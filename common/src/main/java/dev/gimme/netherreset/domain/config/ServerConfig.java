@@ -1,9 +1,18 @@
 package dev.gimme.netherreset.domain.config;
 
-public abstract class ServerConfig {
+import net.minecraft.core.Registry;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
-    public abstract boolean preventItemsFromTeleporting();
-    public abstract boolean preventEntitiesFromTeleporting();
-    public abstract boolean allowTeleportToNether();
-    public abstract boolean allowTeleportFromNether();
+import java.util.List;
+
+public interface ServerConfig {
+
+    boolean preventItemsFromTeleporting();
+    boolean preventOtherEntitiesFromTeleporting();
+    boolean allowEntitiesTeleportToNether();
+    boolean allowEntitiesTeleportFromNether();
+
+    List<ItemStack> getNetherStarterItems(Registry<Item> itemRegistry);
+    boolean refreshNetherStarterItemsOnDeath();
 }

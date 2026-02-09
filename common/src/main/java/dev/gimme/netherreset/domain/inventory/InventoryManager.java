@@ -1,20 +1,26 @@
 package dev.gimme.netherreset.domain.inventory;
 
+import dev.gimme.netherreset.Main;
 import dev.gimme.netherreset.application.PlayerAttachmentAccessor;
+import dev.gimme.netherreset.domain.config.ServerConfig;
+import dev.gimme.netherreset.domain.util.Constants;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Manages player inventories across dimensions, specifically handling the Nether and the default dimension. It allows for
- * storing and applying inventory snapshots when players switch dimensions, die, or respawn.
+ * Manages player inventory switching based on dimension.
  */
 public class InventoryManager {
 
     private final PlayerAttachmentAccessor playerAttachmentAccessor;
+    private final ServerConfig serverConfig;
 
-    public InventoryManager(PlayerAttachmentAccessor playerAttachmentAccessor) {
+    public InventoryManager(PlayerAttachmentAccessor playerAttachmentAccessor, ServerConfig serverConfig) {
         this.playerAttachmentAccessor = playerAttachmentAccessor;
+        this.serverConfig = serverConfig;
     }
 
     /**
@@ -23,63 +29,62 @@ public class InventoryManager {
     public void switchInventoryBasedOnDimension(ServerPlayer player, ResourceKey<Level> fromDimension, ResourceKey<Level> toDimension) {
         if (fromDimension == toDimension) return;
 
-        if (toDimension == Level.NETHER) {
-            swapToNetherInventory(player);
-        } else if (fromDimension == Level.NETHER) {
-            swapToDefaultInventory(player);
+        storeInventory(player, fromDimension, InventorySnapshot.fromPlayer(player));
+        InventorySnapshot newInv = getOrCreateInventory(player, toDimension);
+        newInv.applyTo(player);
+    }
+
+    @NotNull
+    private InventorySnapshot getOrCreateInventory(ServerPlayer player, ResourceKey<Level> dimension) {
+        DimInvData data = playerAttachmentAccessor.getOrCreateDimInvData(player);
+        if (dimension == Level.NETHER) {
+            if (data.netherInv().isEmpty()) {
+                var itemRegistry = player.registryAccess().lookupOrThrow(Registries.ITEM);
+                var starterInv = serverConfig.getNetherStarterItems(itemRegistry);
+                data = data.withNether(InventorySnapshot.of(starterInv));
+                playerAttachmentAccessor.setDimInvData(player, data);
+            }
+            return data.netherInv().get();
+        } else {
+            return data.defaultInv();
         }
     }
 
-    /**
-     * Clears the stored inventory for the player's current dimension. This is typically called on player death to ensure
-     * that they don't retain their inventory in the dimension they died in.
-     */
-    public void clearStoredInventoryInCurrentDimension(ServerPlayer player) {
+    private void storeInventory(ServerPlayer player, ResourceKey<Level> dimension, InventorySnapshot snapshot) {
         DimInvData data = playerAttachmentAccessor.getOrCreateDimInvData(player);
-        if (player.level().dimension() == Level.NETHER) {
-            data = data.withNether(InventorySnapshot.empty());
+        if (dimension == Level.NETHER) {
+            if (data.netherInv().isEmpty()) return;
+            data = data.withNether(snapshot);
         } else {
-            data = data.withDefault(InventorySnapshot.empty());
+            data = data.withDefault(snapshot);
         }
+        Constants.LOG.info("Storing inventory for player {} in dimension {}: {}", player.getName().getString(), dimension, snapshot);
         playerAttachmentAccessor.setDimInvData(player, data);
     }
 
     /**
-     * Sets the player's inventory to the state stored for the dimension they are in. This is typically called on player
-     * respawn to ensure that they keep their inventory if they died in a different dimension.
+     * Clears the stored inventory for the player's current dimension.
      */
-    public void applyStoredInventory(ServerPlayer player) {
+    public void clearStoredInventoryInCurrentDimension(ServerPlayer player) {
         DimInvData data = playerAttachmentAccessor.getOrCreateDimInvData(player);
         if (player.level().dimension() == Level.NETHER) {
-            data.netherInv().applyTo(player);
+            var netherInv = Main.INSTANCE.getServerConfig().refreshNetherStarterItemsOnDeath()
+                    ? null
+                    : InventorySnapshot.empty();
+            data = data.withNether(netherInv);
         } else {
-            data.defaultInv().applyTo(player);
+            data = data.withDefault(InventorySnapshot.empty());
         }
+        Constants.LOG.info("Clearing stored inventory for player {} in dimension {}", player.getName().getString(), player.level().dimension());
+        playerAttachmentAccessor.setDimInvData(player, data);
     }
 
     /**
-     * Swaps the player's inventory to their Nether-specific inventory.
+     * Sets the player's inventory to the state stored for the dimension they are in.
      */
-    private void swapToNetherInventory(ServerPlayer player) {
-        DimInvData data = playerAttachmentAccessor.getOrCreateDimInvData(player);
-
-        InventorySnapshot inventorySnapshot = InventorySnapshot.fromPlayer(player);
-        data.netherInv().applyTo(player);
-
-        DimInvData updated = data.withDefault(inventorySnapshot);
-        playerAttachmentAccessor.setDimInvData(player, updated);
-    }
-
-    /**
-     * Swaps the player's inventory back to their default inventory.
-     */
-    private void swapToDefaultInventory(ServerPlayer player) {
-        DimInvData data = playerAttachmentAccessor.getOrCreateDimInvData(player);
-
-        InventorySnapshot netherSnapshot = InventorySnapshot.fromPlayer(player);
-        data.defaultInv().applyTo(player);
-
-        DimInvData updated = data.withNether(netherSnapshot);
-        playerAttachmentAccessor.setDimInvData(player, updated);
+    public void applyStoredInventory(ServerPlayer player) {
+        var currentDimension = player.level().dimension();
+        Constants.LOG.info("Applying stored inventory for player {} in dimension {}", player.getName().getString(), currentDimension);
+        getOrCreateInventory(player, currentDimension).applyTo(player);
     }
 }

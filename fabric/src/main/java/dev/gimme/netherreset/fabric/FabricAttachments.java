@@ -13,6 +13,6 @@ public final class FabricAttachments {
             builder -> builder
                     .initializer(DimInvData::empty)
                     .persistent(DimInvData.CODEC)
-                    .copyOnDeath() // keep across respawn; optional
+                    .copyOnDeath()
     );
 }
