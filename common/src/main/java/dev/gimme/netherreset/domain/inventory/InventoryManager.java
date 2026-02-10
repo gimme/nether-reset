@@ -70,7 +70,6 @@ public class InventoryManager {
         } else {
             data = data.withDefault(snapshot);
         }
-        Constants.LOG.info("Storing inventory for player {} in dimension {}: {}", player.getName().getString(), dimension, snapshot);
         playerAttachmentAccessor.setDimInvData(player, data);
     }
 
@@ -87,7 +86,6 @@ public class InventoryManager {
         } else {
             data = data.withDefault(InventorySnapshot.empty());
         }
-        Constants.LOG.info("Clearing stored inventory for player {} in dimension {}", player.getName().getString(), player.level().dimension());
         playerAttachmentAccessor.setDimInvData(player, data);
     }
 
@@ -96,7 +94,6 @@ public class InventoryManager {
      */
     public void applyStoredInventory(ServerPlayer player) {
         var currentDimension = player.level().dimension();
-        Constants.LOG.info("Applying stored inventory for player {} in dimension {}", player.getName().getString(), currentDimension);
         getOrCreateInventory(player, currentDimension).applyTo(player);
     }
 }
