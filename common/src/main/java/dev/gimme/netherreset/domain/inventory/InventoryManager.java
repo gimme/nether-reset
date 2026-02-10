@@ -7,6 +7,7 @@ import dev.gimme.netherreset.domain.util.Constants;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,6 +44,17 @@ public class InventoryManager {
                 var starterInv = serverConfig.getNetherStarterItems(itemRegistry);
                 data = data.withNether(InventorySnapshot.of(starterInv));
                 playerAttachmentAccessor.setDimInvData(player, data);
+
+                var mobEffectRegistry = player.registryAccess().lookupOrThrow(Registries.MOB_EFFECT);
+                serverConfig.getGraceEffects().forEach(effect -> {
+                    var mobEffect = mobEffectRegistry.get(effect.effectId());
+                    if (mobEffect.isEmpty()) {
+                        Constants.LOG.warn("Grace effect with ID {} not found, skipping", effect.effectId());
+                        return;
+                    }
+                    if (effect.duration() <= 0) return;
+                    player.addEffect(new MobEffectInstance(mobEffect.get(), effect.duration(), effect.amplifier()));
+                });
             }
             return data.netherInv().get();
         } else {

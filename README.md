@@ -19,6 +19,7 @@ To prevent cheesing the system, dropped items and other entities cannot travel t
 - Ancient Cities contain an Ender Chest (or Ender Eye)
 - Dying in one dimension does not affect the inventory of the other dimension
 - Dropped items (and other entities) cannot travel through portals
+- When you first enter the Nether, you get a grace period of 60 seconds with fire resistance and slow falling.
 
 
 ![Logo](/images/logo.png)
