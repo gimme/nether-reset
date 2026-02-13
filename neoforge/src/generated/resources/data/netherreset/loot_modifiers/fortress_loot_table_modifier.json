@@ -6,5 +6,5 @@
       "loot_table_id": "minecraft:chests/nether_bridge"
     }
   ],
-  "table": "netherreset:fortress_loot_table"
+  "table": "netherreset:fortress_extra_loot_table"
 }

@@ -6,7 +6,19 @@
       "entries": [
         {
           "type": "minecraft:empty",
-          "weight": 8
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": 1.0,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:melon",
+          "weight": 2
         },
         {
           "type": "minecraft:item",
@@ -15,14 +27,13 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 3.0,
+                "max": 5.0,
                 "min": 1.0
               },
               "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:potion",
-          "weight": 3
+          "name": "minecraft:melon_slice"
         },
         {
           "type": "minecraft:item",
@@ -31,17 +42,17 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 2.0,
-                "min": 1.0
+                "max": 8.0,
+                "min": 3.0
               },
               "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:splash_potion"
+          "name": "minecraft:gunpowder"
         }
       ],
-      "rolls": 1.0
+      "rolls": 3.0
     }
   ],
-  "random_sequence": "netherreset:fortress_loot_table"
+  "random_sequence": "netherreset:bastion_treasure_extra_loot_table"
 }
