@@ -5,22 +5,22 @@ This creates a more challenging experience in the Nether, as players must gather
 When you first enter the Nether, you start with an empty inventory.
 When you leave the Nether, your inventory gets restored to what it was in the Overworld.
 
-To extract resources from the Nether, you must use an Ender Chest.
-Normally, Ender Chests cannot be accessed in the Overworld, so this mod adds it through Ancient Cities.
-In the center of Ancient Cities,
-two variants have an Ender Chest below the portal frame,
-and the third variant has a normal chest that contains an Ender Eye.
+Items cannot travel through portals,
+so the only way to extract resources from the Nether is to use an Ender Chest.
+Normally, they cannot be found in the Overworld, but this mod adds it by utilizing Ancient Cities.
+An Ender Chest is now placed below the portal frame in the center of each Ancient City.
 
-To prevent cheesing the system, dropped items and other entities cannot travel through portals.
+Some loot tables are supplemented with extra brewing ingredients that would otherwise be difficult to obtain in the Nether.
 
 
 ### Features
 - Separate inventory for the Nether dimension
-- Ancient Cities contain an Ender Chest (or Ender Eye)
+- Each Ancient City contains an Ender Chest
 - Dying in one dimension does not affect the inventory of the other dimension
-- Dropped items (and other entities) cannot travel through portals
-- When you first enter the Nether, you get a grace period of 60 seconds with fire resistance.
-- Extra items in loot tables: Fortress chests have a chance to contain Water Bottles, and Bastion chests have a chance to contain Melon Slices and Gunpowder.
+- Dropped items (and other entities) cannot enter portals
+- When you first enter the Nether, you get a grace period of 60 seconds with fire resistance
+- Fortress chests have a chance to contain Water Bottles
+- Bastion chests have a chance to contain Melon Slices and Gunpowder
 
 
 ![Logo](/images/logo.png)
