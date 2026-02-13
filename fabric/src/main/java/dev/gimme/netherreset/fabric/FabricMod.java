@@ -1,6 +1,7 @@
 package dev.gimme.netherreset.fabric;
 
 import dev.gimme.netherreset.Main;
+import dev.gimme.netherreset.fabric.loot.LootTableModifiers;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -19,5 +20,8 @@ public class FabricMod implements ModInitializer {
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
             Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, origin.dimension(), destination.dimension());
         });
+
+        // Modify loot tables
+        LootTableModifiers.modifyLootTables();
     }
 }

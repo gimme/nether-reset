@@ -49,8 +49,9 @@ public class NightServerConfig implements ServerConfig {
     private static final ConfigValue<List<String>> GRACE_EFFECTS = SPEC.variable()
             .comment("""
                     List of effects players get when they first enter the Nether.
-                    Format: "effectId,durationSeconds,amplifier\"""")
-            .define("graceEffects", List.of("minecraft:fire_resistance,60,0", "minecraft:slow_falling,60,0"));
+                    Format: "effectId,durationSeconds[60],amplifier[0]"
+                    Example: ["fire_resistance,120", "absorption,60,1", "haste,60,3"]""")
+            .define("graceEffects", List.of("fire_resistance"));
 
     @Override
     public boolean preventItemsFromTeleporting() {
@@ -79,25 +80,25 @@ public class NightServerConfig implements ServerConfig {
                     String[] parts = itemString.split(",");
 
                     String itemIdString = parts[0].trim();
-                    int amount = 1;
-                    if (parts.length > 1) {
-                        try {
-                            amount = Integer.parseInt(parts[1].trim());
-                        } catch (NumberFormatException e) {
-                            Constants.LOG.warn("Invalid amount for item in starterNetherInventory: {}", itemString);
-                        }
-                    }
-
                     Holder.Reference<Item> item = null;
                     var itemIdentifier = Identifier.tryParse(itemIdString);
                     if (itemIdentifier != null) {
                         item = itemRegistry.get(itemIdentifier).orElse(null);
                     }
-
                     if (item == null) {
-                        Constants.LOG.warn("Invalid item in starterNetherInventory: {}", itemIdString);
+                        Constants.LOG.warn("Invalid item in starterNetherInventory: \"{}\"", itemIdString);
                         return null;
                     }
+
+                    int amount = 1;
+                    if (parts.length > 1) {
+                        try {
+                            amount = Integer.parseInt(parts[1].trim());
+                        } catch (NumberFormatException e) {
+                            Constants.LOG.warn("Invalid amount for item in starterNetherInventory: \"{}\"", itemString);
+                        }
+                    }
+
                     return new ItemStack(item.value(), amount);
                 })
                 .filter(Objects::nonNull)
@@ -117,16 +118,17 @@ public class NightServerConfig implements ServerConfig {
 
                     Identifier effectId = Identifier.tryParse(parts[0].trim());
                     if (effectId == null) {
-                        Constants.LOG.warn("Invalid effectId for graceEffect: {}", effectString);
+                        Constants.LOG.warn("Invalid effectId for graceEffect: \"{}\"", effectString);
                         return null;
                     }
 
-                    double durationSeconds;
-                    try {
-                        durationSeconds = Double.parseDouble(parts[1].trim());
-                    } catch (Exception e) {
-                        Constants.LOG.warn("Invalid durationSeconds for graceEffect: {}", effectString);
-                        return null;
+                    double durationSeconds = 60;
+                    if (parts.length > 1) {
+                        try {
+                            durationSeconds = Double.parseDouble(parts[1].trim());
+                        } catch (Exception e) {
+                            Constants.LOG.warn("Invalid durationSeconds for graceEffect: \"{}\"", effectString);
+                        }
                     }
 
                     int amplifier = 0;
@@ -134,7 +136,7 @@ public class NightServerConfig implements ServerConfig {
                         try {
                             amplifier = Integer.parseInt(parts[2].trim());
                         } catch (NumberFormatException e) {
-                            Constants.LOG.warn("Invalid amplifier for graceEffect: {}", effectString);
+                            Constants.LOG.warn("Invalid amplifier for graceEffect: \"{}\"", effectString);
                         }
                     }
 
