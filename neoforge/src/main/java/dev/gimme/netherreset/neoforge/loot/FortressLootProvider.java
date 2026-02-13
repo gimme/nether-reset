@@ -1,6 +1,6 @@
 package dev.gimme.netherreset.neoforge.loot;
 
-import dev.gimme.netherreset.domain.loot.LootPools;
+import dev.gimme.netherreset.domain.loot.ExtraLootPools;
 import dev.gimme.netherreset.domain.util.Constants;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -33,6 +33,6 @@ public class FortressLootProvider extends LootTableProvider {
     }
 
     private static void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output) {
-        output.accept(KEY, LootTable.lootTable().withPool(LootPools.FORTRESS));
+        output.accept(KEY, LootTable.lootTable().withPool(ExtraLootPools.FORTRESS));
     }
 }
