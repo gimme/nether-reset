@@ -49,8 +49,8 @@ public class NightServerConfig implements ServerConfig {
     private static final ConfigValue<List<String>> GRACE_EFFECTS = SPEC.variable()
             .comment("""
                     List of effects players get when they first enter the Nether.
-                    Format: "effectId,durationSeconds[60],amplifier[0]"
-                    Example: ["fire_resistance,120", "absorption,60,1", "haste,60,3"]""")
+                    Format: "effectId,durationSeconds[60],level[1]"
+                    Example: ["fire_resistance,120", "absorption,60,1", "haste,60,2"]""")
             .define("graceEffects", List.of("fire_resistance"));
 
     @Override
@@ -118,7 +118,7 @@ public class NightServerConfig implements ServerConfig {
 
                     Identifier effectId = Identifier.tryParse(parts[0].trim());
                     if (effectId == null) {
-                        Constants.LOG.warn("Invalid effectId for graceEffect: \"{}\"", effectString);
+                        Constants.LOG.warn("Invalid effectId for graceEffects: \"{}\"", effectString);
                         return null;
                     }
 
@@ -127,16 +127,16 @@ public class NightServerConfig implements ServerConfig {
                         try {
                             durationSeconds = Double.parseDouble(parts[1].trim());
                         } catch (Exception e) {
-                            Constants.LOG.warn("Invalid durationSeconds for graceEffect: \"{}\"", effectString);
+                            Constants.LOG.warn("Invalid durationSeconds for graceEffects: \"{}\"", effectString);
                         }
                     }
 
                     int amplifier = 0;
                     if (parts.length > 2) {
                         try {
-                            amplifier = Integer.parseInt(parts[2].trim());
+                            amplifier = Integer.parseInt(parts[2].trim()) - 1; // Config is 1-based for user-friendliness, but MobEffectInstance expects 0-based
                         } catch (NumberFormatException e) {
-                            Constants.LOG.warn("Invalid amplifier for graceEffect: \"{}\"", effectString);
+                            Constants.LOG.warn("Invalid level for graceEffects: \"{}\"", effectString);
                         }
                     }
 

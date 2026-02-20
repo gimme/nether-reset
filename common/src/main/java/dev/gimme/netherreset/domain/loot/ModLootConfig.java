@@ -17,7 +17,7 @@ import java.util.Set;
 
 /**
  * Configuration of extra loot pools to be added to existing loot tables.
- * Note: NeoForge requires you to run the data gen task for changes to take effect.
+ * Note: NeoForge requires the data gen task for changes to take effect.
  */
 public class ModLootConfig {
 
