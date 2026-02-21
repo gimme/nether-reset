@@ -23,6 +23,10 @@ loom {
         defaultRefmapName.set("${mod_id}.refmap.json")
     }
     runs {
+        configureEach {
+            property("mixin.debug.export", "true")
+            property("mixin.debug.countInjections", "true")
+        }
         client {
             client()
             setConfigName('Fabric Client')

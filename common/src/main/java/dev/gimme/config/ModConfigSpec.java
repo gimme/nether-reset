@@ -1,10 +1,9 @@
-package dev.gimme.netherreset.infrastructure;
+package dev.gimme.config;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.toml.TomlFormat;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -12,8 +11,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class ModConfigSpec {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ModConfigSpec.class);
 
     private CommentedFileConfig config;
     private final List<VariableBuilder> configValues = new ArrayList<>();
@@ -30,14 +27,13 @@ public class ModConfigSpec {
         });
     }
 
-    public void init(Path configDir, String fileName) {
+    public void init(@NotNull Path configDir, @NotNull String fileName) {
         config = CommentedFileConfig
-                .builder(configDir.resolve(fileName), TomlFormat.instance())
-                .onLoad(this::onLoad)
-                .onAutoReload(() -> LOG.info("Config reloaded: {}", fileName))
-                .preserveInsertionOrder()
-                .autoreload()
-                .build();
+            .builder(configDir.resolve(fileName), TomlFormat.instance())
+            .onLoad(this::onLoad)
+            .preserveInsertionOrder()
+            .autoreload()
+            .build();
         config.load();
     }
 
@@ -61,11 +57,11 @@ public class ModConfigSpec {
             return this;
         }
 
-        public <T> ConfigValue<T> define(String key, T defaultValue) {
+        public <T> ConfigValue<T> define(@NotNull String key, T defaultValue) {
             return define(key, () -> defaultValue);
         }
 
-        public <T> ConfigValue<T> define(String key, Supplier<T> defaultValue) {
+        public <T> ConfigValue<T> define(@NotNull String key, @NotNull Supplier<T> defaultValue) {
             this.key = key;
             this.defaultValue = defaultValue;
             spec.configValues.add(this);
@@ -73,7 +69,16 @@ public class ModConfigSpec {
         }
     }
 
-    public record ConfigValue<T>(String key, ModConfigSpec spec) {
+    public static class ConfigValue<T> {
+
+        private final @NotNull String key;
+        private final @NotNull ModConfigSpec spec;
+
+        public ConfigValue(@NotNull String key, @NotNull ModConfigSpec spec) {
+            this.key = key;
+            this.spec = spec;
+        }
+
         public T get() {
             if (spec.config == null) {
                 throw new IllegalStateException("Config has not been initialized");

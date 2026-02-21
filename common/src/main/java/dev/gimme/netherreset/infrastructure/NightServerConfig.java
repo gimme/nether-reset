@@ -1,8 +1,9 @@
 package dev.gimme.netherreset.infrastructure;
 
+import dev.gimme.config.ModConfigSpec;
 import dev.gimme.netherreset.domain.config.ServerConfig;
 import dev.gimme.netherreset.domain.util.Constants;
-import dev.gimme.netherreset.infrastructure.ModConfigSpec.ConfigValue;
+import dev.gimme.config.ModConfigSpec.ConfigValue;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
