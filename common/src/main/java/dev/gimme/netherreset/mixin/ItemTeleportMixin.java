@@ -17,6 +17,7 @@ public class ItemTeleportMixin {
 
     @Inject(method = "canTeleport", at = @At("HEAD"), cancellable = true)
     private void preventEntitiesFromTeleportingToOrFromNether(Level fromLevel, Level toLevel, CallbackInfoReturnable<Boolean> cir) {
+        if (fromLevel.isClientSide()) return;
         Entity instance = (Entity) (Object) this;
 
         if (instance.getType() == EntityType.PLAYER) return;
