@@ -53,6 +53,12 @@ public class NightServerConfig implements ServerConfig {
                     Example: ["fire_resistance,120", "absorption,60,1", "haste,60,2"]""")
             .define("graceEffects", List.of("fire_resistance"));
 
+    private static final ConfigValue<Boolean> EXTRA_LOOT_ENABLED = SPEC.variable()
+        .comment("""
+            When true, the mod injects extra loot pools with Overworld-related items (e.g. Water Bottles and Glistering Melon Slices)
+            into Nether structure chest and Piglin bartering loot tables. Setting this to false disables these custom additions.""")
+        .define("extraLootEnabled", true);
+
     @Override
     public boolean preventItemsFromTeleporting() {
         return PREVENT_ITEMS_FROM_TELEPORTING.get();
@@ -144,5 +150,10 @@ public class NightServerConfig implements ServerConfig {
                 })
                 .filter(Objects::nonNull)
                 .collect(java.util.stream.Collectors.toSet());
+    }
+
+    @Override
+    public boolean isExtraLootEnabled() {
+        return EXTRA_LOOT_ENABLED.get();
     }
 }

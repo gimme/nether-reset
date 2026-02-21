@@ -3,6 +3,7 @@ package dev.gimme.netherreset.neoforge;
 import dev.gimme.netherreset.Main;
 import dev.gimme.netherreset.domain.util.Constants;
 import dev.gimme.netherreset.neoforge.loot.LootProviders;
+import dev.gimme.netherreset.neoforge.loot.ModLootConditionTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -11,20 +12,16 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 @Mod(Constants.MOD_ID)
 public class NeoForgeMod {
 
     public NeoForgeMod(IEventBus modBus) {
+        Main.init(FMLPaths.CONFIGDIR.get(), new NeoForgeAttachmentAccessor());
         NeoForge.EVENT_BUS.register(this);
+        ModLootConditionTypes.REGISTRY.register(modBus);
         modBus.register(new LootProviders());
         NeoForgeAttachments.register(modBus);
-    }
-
-    @SubscribeEvent
-    private void onServerStarting(ServerStartingEvent event) {
-        Main.init(FMLPaths.CONFIGDIR.get(), new NeoForgeAttachmentAccessor());
     }
 
     @SubscribeEvent

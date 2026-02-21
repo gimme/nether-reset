@@ -20,7 +20,8 @@ Some loot tables are supplemented with extra brewing ingredients that would othe
 - Dropped items (and other entities) cannot enter portals
 - When you first enter the Nether, you get a grace period of 60 seconds with fire resistance
 - Fortress chests have a chance to contain Water Bottles
-- Bastion chests have a chance to contain Melon Slices and Gunpowder
+- Bastion chests have a chance to contain Glistering Melon Slices
+- Piglin bartering has a higher chance of yielding Water Bottles
 
 
 ![Logo](/images/logo.png)

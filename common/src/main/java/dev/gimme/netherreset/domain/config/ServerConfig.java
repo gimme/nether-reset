@@ -20,6 +20,8 @@ public interface ServerConfig {
 
     Set<GraceEffect> getGraceEffects();
 
+    boolean isExtraLootEnabled();
+
     record GraceEffect(
             Identifier effectId,
             int duration,

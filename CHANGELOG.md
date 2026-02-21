@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added option to disable loot modifications
+
+### Changed
+
+- Updated loot modifications
+
 ## [v1.21.11-0.1.1] - 2026-02-14
 
 ### Added
