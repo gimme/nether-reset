@@ -1,8 +1,9 @@
 {
   "entries": [
-    "netherreset:bastion_treasure_loot_table_modifier",
     "netherreset:fortress_loot_table_modifier",
-    "netherreset:bastion_loot_table_modifier"
+    "netherreset:bastion_loot_table_modifier",
+    "netherreset:barter_loot_table_modifier",
+    "netherreset:bastion_treasure_loot_table_modifier"
   ],
   "replace": false
 }

@@ -1,12 +1,12 @@
 {
-  "type": "minecraft:chest",
+  "type": "minecraft:barter",
   "pools": [
     {
       "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:empty",
-          "weight": 2
+          "weight": 45
         },
         {
           "type": "minecraft:item",
@@ -17,26 +17,22 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:glistering_melon_slice"
+          "name": "minecraft:potion"
         },
         {
           "type": "minecraft:item",
           "functions": [
             {
               "add": false,
-              "count": {
-                "type": "minecraft:uniform",
-                "max": 6.0,
-                "min": 1.0
-              },
+              "count": 1.0,
               "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:glistering_melon_slice"
+          "name": "minecraft:splash_potion"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "netherreset:bastion_treasure_extra_loot_table"
+  "random_sequence": "netherreset:barter_extra_loot_table"
 }

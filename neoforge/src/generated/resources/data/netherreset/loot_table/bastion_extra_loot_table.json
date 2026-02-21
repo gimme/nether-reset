@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:empty",
-          "weight": 20
+          "weight": 6
         },
         {
           "type": "minecraft:item",
@@ -17,7 +17,7 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:melon_slice",
+          "name": "minecraft:glistering_melon_slice",
           "weight": 2
         },
         {
@@ -33,25 +33,10 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:melon_slice"
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "add": false,
-              "count": {
-                "type": "minecraft:uniform",
-                "max": 3.0,
-                "min": 1.0
-              },
-              "function": "minecraft:set_count"
-            }
-          ],
-          "name": "minecraft:gunpowder"
+          "name": "minecraft:glistering_melon_slice"
         }
       ],
-      "rolls": 3.0
+      "rolls": 1.0
     }
   ],
   "random_sequence": "netherreset:bastion_extra_loot_table"

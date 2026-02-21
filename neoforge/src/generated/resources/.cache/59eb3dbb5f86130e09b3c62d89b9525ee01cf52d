@@ -1,4 +1,5 @@
-// 1.21.11	2026-02-14T00:21:28.9251505	Loot Tables
-66e48ca8b57e24925539c021b512dde7c5c1312d data/netherreset/loot_table/bastion_extra_loot_table.json
-9d4d99c99b9877b87e1c1616e4eac3a7ae1336aa data/netherreset/loot_table/bastion_treasure_extra_loot_table.json
-016e61303285b9a53a4776462a70a85ed86fcfcb data/netherreset/loot_table/fortress_extra_loot_table.json
+// 1.21.11	2026-02-21T22:51:02.0321381	Loot Tables
+90d95682e537a69e3838ce95713b370ed2950042 data/netherreset/loot_table/barter_extra_loot_table.json
+2d221b81ff21859434853f947c7c5ae64ae69ef2 data/netherreset/loot_table/bastion_extra_loot_table.json
+452eef2fb70ec533cd9a9123324cabe522377e73 data/netherreset/loot_table/bastion_treasure_extra_loot_table.json
+fd9e9908b88d5941276360dfb80b3dd133a2a013 data/netherreset/loot_table/fortress_extra_loot_table.json

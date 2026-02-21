@@ -6,15 +6,15 @@
       "terms": [
         {
           "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:chests/bastion_hoglin_stable"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
           "loot_table_id": "minecraft:chests/bastion_other"
         },
         {
           "condition": "neoforge:loot_table_id",
           "loot_table_id": "minecraft:chests/bastion_bridge"
-        },
-        {
-          "condition": "neoforge:loot_table_id",
-          "loot_table_id": "minecraft:chests/bastion_hoglin_stable"
         }
       ]
     }

@@ -22,23 +22,28 @@ import java.util.Set;
 public class ModLootConfig {
 
     private static final LootPool.Builder BASTION_LOOT = LootPool.lootPool()
-        .setRolls(ConstantValue.exactly(3))
-        .add(EmptyLootItem.emptyItem().setWeight(20))
-        .add(LootItem.lootTableItem(Items.MELON_SLICE).setWeight(2).apply(SetItemCountFunction.setCount(ConstantValue.exactly(1))))
-        .add(LootItem.lootTableItem(Items.MELON_SLICE).setWeight(1).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 3))))
-        .add(LootItem.lootTableItem(Items.GUNPOWDER).setWeight(1).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 3))));
+        .setRolls(ConstantValue.exactly(1))
+        .add(EmptyLootItem.emptyItem().setWeight(6))
+        .add(LootItem.lootTableItem(Items.GLISTERING_MELON_SLICE).setWeight(2).apply(SetItemCountFunction.setCount(ConstantValue.exactly(1))))
+        .add(LootItem.lootTableItem(Items.GLISTERING_MELON_SLICE).setWeight(1).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 3))));
 
     private static final LootPool.Builder BASTION_TREASURE_LOOT = LootPool.lootPool()
-        .setRolls(ConstantValue.exactly(3))
-        .add(EmptyLootItem.emptyItem().setWeight(20))
-        .add(LootItem.lootTableItem(Items.MELON).setWeight(2).apply(SetItemCountFunction.setCount(ConstantValue.exactly(1))))
-        .add(LootItem.lootTableItem(Items.MELON_SLICE).setWeight(1).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 5))))
-        .add(LootItem.lootTableItem(Items.GUNPOWDER).setWeight(1).apply(SetItemCountFunction.setCount(UniformGenerator.between(3, 8))));
+        .setRolls(ConstantValue.exactly(1))
+        .add(EmptyLootItem.emptyItem().setWeight(2))
+        .add(LootItem.lootTableItem(Items.GLISTERING_MELON_SLICE).setWeight(1).apply(SetItemCountFunction.setCount(ConstantValue.exactly(1))))
+        .add(LootItem.lootTableItem(Items.GLISTERING_MELON_SLICE).setWeight(1).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 6))));
 
     private static final LootPool.Builder FORTRESS_LOOT = LootPool.lootPool()
         .setRolls(ConstantValue.exactly(1))
         .add(EmptyLootItem.emptyItem().setWeight(7))
-        .add(LootItem.lootTableItem(Items.POTION).setWeight(4).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 3))))
+        .add(LootItem.lootTableItem(Items.POTION).setWeight(1).apply(SetItemCountFunction.setCount(ConstantValue.exactly(1))))
+        .add(LootItem.lootTableItem(Items.POTION).setWeight(3).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 3))))
+        .add(LootItem.lootTableItem(Items.SPLASH_POTION).setWeight(1).apply(SetItemCountFunction.setCount(ConstantValue.exactly(1))));
+
+    private static final LootPool.Builder BARTER_LOOT = LootPool.lootPool()
+        .setRolls(ConstantValue.exactly(1))
+        .add(EmptyLootItem.emptyItem().setWeight(45))
+        .add(LootItem.lootTableItem(Items.POTION).setWeight(1).apply(SetItemCountFunction.setCount(ConstantValue.exactly(1))))
         .add(LootItem.lootTableItem(Items.SPLASH_POTION).setWeight(1).apply(SetItemCountFunction.setCount(ConstantValue.exactly(1))));
 
     public static final Set<ExtraLootPool> EXTRA_LOOT_POOLS = Set.of(
@@ -48,7 +53,8 @@ public class ModLootConfig {
             BuiltInLootTables.BASTION_OTHER
         )),
         new ExtraLootPool("bastion_treasure", BASTION_TREASURE_LOOT, LootContextParamSets.CHEST, Set.of(BuiltInLootTables.BASTION_TREASURE)),
-        new ExtraLootPool("fortress", FORTRESS_LOOT, LootContextParamSets.CHEST, Set.of(BuiltInLootTables.NETHER_BRIDGE))
+        new ExtraLootPool("fortress", FORTRESS_LOOT, LootContextParamSets.CHEST, Set.of(BuiltInLootTables.NETHER_BRIDGE)),
+        new ExtraLootPool("barter", BARTER_LOOT, LootContextParamSets.PIGLIN_BARTER, Set.of(BuiltInLootTables.PIGLIN_BARTERING))
     );
 
     public record ExtraLootPool(
