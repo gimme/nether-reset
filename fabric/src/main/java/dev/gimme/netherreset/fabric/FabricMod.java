@@ -2,16 +2,21 @@ package dev.gimme.netherreset.fabric;
 
 import dev.gimme.netherreset.Main;
 import dev.gimme.netherreset.domain.loot.ModLootConfig;
+import dev.gimme.netherreset.domain.util.Constants;
+import dev.gimme.netherreset.infrastructure.FcapServerConfig;
+import fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
-import net.fabricmc.loader.api.FabricLoader;
+import net.neoforged.fml.config.ModConfig;
 
 public class FabricMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        Main.init(FabricLoader.getInstance().getConfigDir(), new FabricAttachmentAccessor(FabricAttachments.DIM_INV));
+        ConfigRegistry.INSTANCE.register(Constants.MOD_ID, ModConfig.Type.COMMON, FcapServerConfig.SPEC, FcapServerConfig.FILE_NAME);
+
+        Main.init(new FabricAttachmentAccessor(FabricAttachments.DIM_INV));
 
         // Register events
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {

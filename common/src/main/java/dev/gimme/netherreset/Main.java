@@ -4,26 +4,22 @@ import dev.gimme.netherreset.application.PlayerAttachmentAccessor;
 import dev.gimme.netherreset.application.PlayerHandler;
 import dev.gimme.netherreset.domain.inventory.InventoryManager;
 import dev.gimme.netherreset.domain.config.ServerConfig;
-import dev.gimme.netherreset.domain.util.Constants;
-import dev.gimme.netherreset.infrastructure.NightServerConfig;
-
-import java.nio.file.Path;
+import dev.gimme.netherreset.infrastructure.FcapServerConfig;
 
 public class Main {
 
     public static Main INSTANCE;
 
-    public static Main init(Path configDir, PlayerAttachmentAccessor playerAttachmentAccessor) {
-        INSTANCE = new Main(configDir, playerAttachmentAccessor);
+    public static Main init(PlayerAttachmentAccessor playerAttachmentAccessor) {
+        INSTANCE = new Main(playerAttachmentAccessor);
         return INSTANCE;
     }
 
     private final ServerConfig serverConfig;
     private final PlayerHandler playerHandler;
 
-    private Main(Path configDir, PlayerAttachmentAccessor playerAttachmentAccessor) {
-        NightServerConfig.SPEC.init(configDir, Constants.MOD_ID + "-server.toml");
-        this.serverConfig = new NightServerConfig();
+    private Main(PlayerAttachmentAccessor playerAttachmentAccessor) {
+        this.serverConfig = new FcapServerConfig();
         this.playerHandler = new PlayerHandler(new InventoryManager(playerAttachmentAccessor, serverConfig));
     }
 

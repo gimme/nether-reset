@@ -1,64 +1,72 @@
 package dev.gimme.netherreset.infrastructure;
 
-import dev.gimme.config.ModConfigSpec;
 import dev.gimme.netherreset.domain.config.ServerConfig;
 import dev.gimme.netherreset.domain.util.Constants;
-import dev.gimme.config.ModConfigSpec.ConfigValue;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class NightServerConfig implements ServerConfig {
+/**
+ * {@link ServerConfig} backed by the NeoForge config system. The spec is defined once here in the common module and
+ * registered per loader (natively on NeoForge, via Forge Config API Port on Fabric) as a {@code COMMON} config.
+ */
+public class FcapServerConfig implements ServerConfig {
 
-    public static final ModConfigSpec SPEC = new ModConfigSpec();
+    public static final String FILE_NAME = Constants.MOD_ID + "-server.toml";
 
-    private static final ConfigValue<Boolean> PREVENT_ITEMS_FROM_TELEPORTING = SPEC.variable()
+    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+
+    private static final BooleanValue PREVENT_ITEMS_FROM_TELEPORTING = BUILDER
             .comment("If items should be prevented from traveling through portals.")
             .define("preventItemsFromTeleporting", true);
 
-    private static final ConfigValue<Boolean> PREVENT_OTHER_ENTITIES_FROM_TELEPORTING = SPEC.variable()
+    private static final BooleanValue PREVENT_OTHER_ENTITIES_FROM_TELEPORTING = BUILDER
             .comment("If other entities (e.g., mobs) should be prevented from traveling through portals.")
             .define("preventOtherEntitiesFromTeleporting", true);
 
-    private static final ConfigValue<Boolean> ALLOW_ENTITIES_TELEPORT_TO_NETHER = SPEC.variable()
+    private static final BooleanValue ALLOW_ENTITIES_TELEPORT_TO_NETHER = BUILDER
             .comment("If items and other entities should always be allowed to teleport TO the Nether (one direction).")
             .define("allowEntitiesTeleportToNether", false);
 
-    private static final ConfigValue<Boolean> ALLOW_ENTITIES_TELEPORT_FROM_NETHER = SPEC.variable()
+    private static final BooleanValue ALLOW_ENTITIES_TELEPORT_FROM_NETHER = BUILDER
             .comment("If items and other entities should always be allowed to teleport FROM the Nether (one direction).")
             .define("allowEntitiesTeleportFromNether", false);
 
-    private static final ConfigValue<List<String>> NETHER_STARTER_ITEMS = SPEC.variable()
+    private static final ModConfigSpec.ConfigValue<List<? extends String>> NETHER_STARTER_ITEMS = BUILDER
             .comment("""
                     List of items players get when they first enter the Nether.
                     Format: "itemId,amount"
                     Example: ["minecraft:ender_pearl,1", "minecraft:wooden_pickaxe"]""")
-            .define("netherStarterItems", List.of());
+            .defineList("netherStarterItems", List.of(), () -> "", o -> o instanceof String);
 
-    private static final ConfigValue<Boolean> REFRESH_NETHER_STARTER_ITEMS_ON_DEATH = SPEC.variable()
+    private static final BooleanValue REFRESH_NETHER_STARTER_ITEMS_ON_DEATH = BUILDER
             .comment("""
                     If enabled, players will receive the nether starter items again after having died in the Nether.
                     Otherwise, they only receive them the first time they enter the Nether.""")
             .define("refreshNetherStarterItemsOnDeath", false);
 
-    private static final ConfigValue<List<String>> GRACE_EFFECTS = SPEC.variable()
+    private static final ModConfigSpec.ConfigValue<List<? extends String>> GRACE_EFFECTS = BUILDER
             .comment("""
                     List of effects players get when they first enter the Nether.
                     Format: "effectId,durationSeconds[60],level[1]"
                     Example: ["fire_resistance,120", "absorption,60,1", "haste,60,2"]""")
-            .define("graceEffects", List.of("fire_resistance"));
+            .defineList("graceEffects", List.of("fire_resistance"), () -> "", o -> o instanceof String);
 
-    private static final ConfigValue<Boolean> EXTRA_LOOT_ENABLED = SPEC.variable()
-        .comment("""
-            When true, the mod injects extra loot pools with Overworld-related items (e.g. Water Bottles and Glistering Melon Slices)
-            into Nether structure chest and Piglin bartering loot tables. Setting this to false disables these custom additions.""")
-        .define("extraLootEnabled", true);
+    private static final BooleanValue EXTRA_LOOT_ENABLED = BUILDER
+            .comment("""
+                    When true, the mod injects extra loot pools with Overworld-related items (e.g. Water Bottles and Glistering Melon Slices)
+                    into Nether structure chest and Piglin bartering loot tables. Setting this to false disables these custom additions.""")
+            .define("extraLootEnabled", true);
+
+    public static final ModConfigSpec SPEC = BUILDER.build();
 
     @Override
     public boolean preventItemsFromTeleporting() {
