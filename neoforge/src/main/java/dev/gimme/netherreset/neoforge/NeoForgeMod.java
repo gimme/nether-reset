@@ -29,19 +29,19 @@ public class NeoForgeMod {
     }
 
     @SubscribeEvent
-    private void onChangeWorld(PlayerEvent.PlayerChangedDimensionEvent event) {
+    public void onChangeWorld(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, event.getFrom(), event.getTo());
     }
 
     @SubscribeEvent
-    private void onPlayerDeath(LivingDeathEvent event) {
+    public void onPlayerDeath(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         Main.INSTANCE.getPlayerHandler().onPlayerDeath(player);
     }
 
     @SubscribeEvent
-    private void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+    public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         Main.INSTANCE.getPlayerHandler().onPlayerRespawn(player, event.isEndConquered());
     }
