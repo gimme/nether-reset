@@ -12,6 +12,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.loot.AddTableLootModifier;
+import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
@@ -50,6 +51,7 @@ public class LootProviders {
                     extraPool.name() + "_loot_table_modifier",
                     new AddTableLootModifier(
                         new LootItemCondition[]{createLootTableIdCondition(extraPool)},
+                        IGlobalLootModifier.DEFAULT_PRIORITY,
                         getLootTableKey(extraPool)
                     )
                 ));

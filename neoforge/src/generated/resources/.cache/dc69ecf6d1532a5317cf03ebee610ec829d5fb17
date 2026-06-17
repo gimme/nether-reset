@@ -1,6 +1,5 @@
-// 1.21.11	2026-02-21T22:51:02.0341381	Global Loot Modifiers : netherreset
-fb6f6274cf9f18247dcfd413b931eaef60e658c0 data/neoforge/loot_modifiers/global_loot_modifiers.json
+// 26.2	2026-06-17T02:41:17.945600252	Global Loot Modifiers : netherreset
 0900a328d6b24c387cbf22ea9dd6a0bdf86d92b1 data/netherreset/loot_modifiers/barter_loot_table_modifier.json
-9b35d8c55c12957dde8540bd0ab5a8c8f4fecb66 data/netherreset/loot_modifiers/bastion_loot_table_modifier.json
+640376542df993373ee76835d26879f83be9e8b3 data/netherreset/loot_modifiers/bastion_loot_table_modifier.json
 437e442106f6792bc134ec6e7acb822fc6ec47ef data/netherreset/loot_modifiers/bastion_treasure_loot_table_modifier.json
 8a6e861bb1adbfd48a35eb6f0bc5fcebd7457040 data/netherreset/loot_modifiers/fortress_loot_table_modifier.json

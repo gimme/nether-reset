@@ -4,7 +4,6 @@ import com.mojang.serialization.MapCodec;
 import dev.gimme.netherreset.Main;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 
 public record ConfigCondition() implements LootItemCondition {
 
@@ -12,8 +11,8 @@ public record ConfigCondition() implements LootItemCondition {
     public static final MapCodec<ConfigCondition> CODEC = MapCodec.unit(INSTANCE);
 
     @Override
-    public LootItemConditionType getType() {
-        return ModLootConditionTypes.CONFIG_CONDITION_TYPE.get();
+    public MapCodec<ConfigCondition> codec() {
+        return CODEC;
     }
 
     @Override

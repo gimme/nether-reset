@@ -2,7 +2,8 @@ package dev.gimme.netherreset.mixin;
 
 import dev.gimme.netherreset.Main;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,14 +21,14 @@ public class ItemTeleportMixin {
         if (fromLevel.isClientSide()) return;
         Entity instance = (Entity) (Object) this;
 
-        if (instance.getType() == EntityType.PLAYER) return;
+        if (instance instanceof Player) return;
         if (fromLevel.dimension() == toLevel.dimension()) return;
         if (fromLevel.dimension() != Level.NETHER && toLevel.dimension() != Level.NETHER) return;
 
         if (toLevel.dimension() == Level.NETHER && Main.INSTANCE.getServerConfig().allowEntitiesTeleportToNether()) return;
         if (fromLevel.dimension() == Level.NETHER && Main.INSTANCE.getServerConfig().allowEntitiesTeleportFromNether()) return;
 
-        if (instance.getType() == EntityType.ITEM) {
+        if (instance instanceof ItemEntity) {
             if (!Main.INSTANCE.getServerConfig().preventItemsFromTeleporting()) return;
         } else {
             if (!Main.INSTANCE.getServerConfig().preventOtherEntitiesFromTeleporting()) return;
