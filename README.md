@@ -25,8 +25,3 @@ Some loot tables are supplemented with extra brewing ingredients that would othe
 
 
 ![Logo](/images/logo.png)
-
-
-## Credits
-
-Project template used: https://github.com/jaredlll08/MultiLoader-Template

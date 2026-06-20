@@ -1,0 +1,17 @@
+{
+    "schemaVersion": 1,
+    "id": "netherreset_gametest",
+    "version": "1.0.0",
+    "name": "Nether Reset Game Tests",
+    "description": "Game tests for Nether Reset. Dev-only; not shipped in the release jar.",
+    "environment": "server",
+    "entrypoints": {
+        "fabric-gametest": [
+            "dev.gimme.netherreset.fabric.gametest.FabricGameTests"
+        ]
+    },
+    "depends": {
+        "netherreset": "*",
+        "fabric-gametest-api-v1": "*"
+    }
+}
