@@ -11,7 +11,12 @@ import net.minecraft.gametest.framework.GameTestHelper;
 public final class FabricGameTests {
 
     @GameTest
-    public void smoke(GameTestHelper helper) {
-        NetherResetGameTests.smoke(helper);
+    public void firstNetherEntrySwapsInventoryAndAppliesGrace(GameTestHelper helper) {
+        NetherResetGameTests.firstNetherEntrySwapsInventoryAndAppliesGrace(helper);
+    }
+
+    @GameTest
+    public void dimensionInventoriesStayIsolatedAcrossCrossings(GameTestHelper helper) {
+        NetherResetGameTests.dimensionInventoriesStayIsolatedAcrossCrossings(helper);
     }
 }

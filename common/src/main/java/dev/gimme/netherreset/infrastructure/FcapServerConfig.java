@@ -40,7 +40,7 @@ public class FcapServerConfig implements ServerConfig {
             .comment("If items and other entities should always be allowed to teleport FROM the Nether (one direction).")
             .define("allowEntitiesTeleportFromNether", false);
 
-    private static final ModConfigSpec.ConfigValue<List<? extends String>> NETHER_STARTER_ITEMS = BUILDER
+    static final ModConfigSpec.ConfigValue<List<? extends String>> NETHER_STARTER_ITEMS = BUILDER
             .comment("""
                     List of items players get when they first enter the Nether.
                     Format: "itemId,amount"
@@ -53,7 +53,7 @@ public class FcapServerConfig implements ServerConfig {
                     Otherwise, they only receive them the first time they enter the Nether.""")
             .define("refreshNetherStarterItemsOnDeath", false);
 
-    private static final ModConfigSpec.ConfigValue<List<? extends String>> GRACE_EFFECTS = BUILDER
+    static final ModConfigSpec.ConfigValue<List<? extends String>> GRACE_EFFECTS = BUILDER
             .comment("""
                     List of effects players get when they first enter the Nether.
                     Format: "effectId,durationSeconds[60],level[1]"
@@ -109,7 +109,7 @@ public class FcapServerConfig implements ServerConfig {
                     if (parts.length > 1) {
                         try {
                             amount = Integer.parseInt(parts[1].trim());
-                        } catch (NumberFormatException e) {
+                        } catch (NumberFormatException _) {
                             Constants.LOG.warn("Invalid amount for item in starterNetherInventory: \"{}\"", itemString);
                         }
                     }
@@ -141,7 +141,7 @@ public class FcapServerConfig implements ServerConfig {
                     if (parts.length > 1) {
                         try {
                             durationSeconds = Double.parseDouble(parts[1].trim());
-                        } catch (Exception e) {
+                        } catch (Exception _) {
                             Constants.LOG.warn("Invalid durationSeconds for graceEffects: \"{}\"", effectString);
                         }
                     }
@@ -150,7 +150,7 @@ public class FcapServerConfig implements ServerConfig {
                     if (parts.length > 2) {
                         try {
                             amplifier = Integer.parseInt(parts[2].trim()) - 1; // Config is 1-based for user-friendliness, but MobEffectInstance expects 0-based
-                        } catch (NumberFormatException e) {
+                        } catch (NumberFormatException _) {
                             Constants.LOG.warn("Invalid level for graceEffects: \"{}\"", effectString);
                         }
                     }

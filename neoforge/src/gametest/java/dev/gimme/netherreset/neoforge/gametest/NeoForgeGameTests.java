@@ -34,7 +34,8 @@ public final class NeoForgeGameTests {
     }
 
     private static final List<Test> TESTS = List.of(
-            new Test("smoke", 20, NetherResetGameTests::smoke));
+            new Test("first_nether_entry_swaps_inventory_and_applies_grace", 20, NetherResetGameTests::firstNetherEntrySwapsInventoryAndAppliesGrace),
+            new Test("dimension_inventories_stay_isolated_across_crossings", 20, NetherResetGameTests::dimensionInventoriesStayIsolatedAcrossCrossings));
 
     private NeoForgeGameTests() {
     }
