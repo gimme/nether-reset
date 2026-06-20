@@ -1,13 +1,19 @@
 package dev.gimme.netherreset.gametest;
 
+import com.mojang.authlib.GameProfile;
 import dev.gimme.netherreset.Main;
 import dev.gimme.netherreset.infrastructure.ConfigTestSupport;
+import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
@@ -34,7 +40,7 @@ public final class NetherResetGameTests {
      * inventory, and grants the configured grace effect; crossing back restores the Overworld inventory.
      */
     public static void firstNetherEntrySwapsInventoryAndAppliesGrace(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = placeMockPlayer(helper, GameType.SURVIVAL);
         player.getInventory().setItem(0, new ItemStack(Items.DIAMOND, 5));
 
         // 30s, level 2 — distinct from the shipped default (60s, level 1) so the assertions prove the
@@ -63,7 +69,7 @@ public final class NetherResetGameTests {
 
     /** Each dimension keeps its own inventory: items put down in one are still there after a round trip. */
     public static void dimensionInventoriesStayIsolatedAcrossCrossings(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = placeMockPlayer(helper, GameType.SURVIVAL);
         player.getInventory().setItem(0, new ItemStack(Items.DIAMOND, 5));
 
         Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, Level.OVERWORLD, Level.NETHER);
@@ -77,5 +83,22 @@ public final class NetherResetGameTests {
         helper.assertTrue(ItemStack.matches(player.getInventory().getItem(0), new ItemStack(Items.NETHERITE_SCRAP, 2)),
                 "the Nether inventory should still hold what was gathered there");
         helper.succeed();
+    }
+
+    /**
+     * Creates a mock {@link ServerPlayer} of the given gamemode and places it in the test level with a
+     * dummy connection — the non-deprecated replacement for {@code makeMockServerPlayerInLevel()}, which
+     * was locked to creative. {@link GameTestHelper#makeMockServerPlayer(GameType)} only builds the player
+     * object, so we register it here: the player handler stashes/restores the inventory and applies the
+     * grace effect (which sends a packet) straight on the player object, so the player needs a connection.
+     */
+    private static ServerPlayer placeMockPlayer(GameTestHelper helper, GameType gameType) {
+        ServerPlayer player = (ServerPlayer) helper.makeMockServerPlayer(gameType);
+        Connection connection = new Connection(PacketFlow.SERVERBOUND);
+        new EmbeddedChannel(connection);
+        GameProfile profile = player.getGameProfile();
+        helper.getLevel().getServer().getPlayerList()
+                .placeNewPlayer(connection, player, CommonListenerCookie.createInitial(profile, false));
+        return player;
     }
 }
