@@ -10,12 +10,15 @@ so the only way to extract resources from the Nether is to use an Ender Chest.
 Normally, they cannot be found in the Overworld, but this mod adds it by utilizing Ancient Cities.
 An Ender Chest is now placed below the portal frame in the center of each Ancient City.
 
+In order to help find an Ancient City, (Expert) Cartographer offers a trade where you pay Emeralds + either a Wind Charge (Trial Chamber) or a Sponge (Ocean Monument) for a map to it.
+
 Some loot tables are supplemented with extra brewing ingredients that would otherwise be difficult to obtain in the Nether.
 
 
 ### Features
 - Separate inventory for the Nether dimension
 - Each Ancient City contains an Ender Chest
+- Cartographer offers Ancient City Map when reaching Expert level
 - Dying in one dimension does not affect the inventory of the other dimension
 - Dropped items (and other entities) cannot enter portals
 - When you first enter the Nether, you get a grace period of 60 seconds with fire resistance

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+Added Ancient City Map to Cartographer's Expert trade set.
+
 ## [v1.21.11-0.1.2] - 2026-02-21
 
 ### Added

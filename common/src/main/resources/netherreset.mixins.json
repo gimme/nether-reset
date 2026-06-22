@@ -4,6 +4,8 @@
   "package": "dev.gimme.netherreset.mixin",
   "compatibilityLevel": "JAVA_${java_version}",
   "mixins": [
-    "ItemTeleportMixin"
+    "CartographerTradePinMixin",
+    "ItemTeleportMixin",
+    "VillagerTradeNerfMixin"
   ]
 }
