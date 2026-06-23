@@ -21,7 +21,7 @@ public class NeoForgeMod {
     public NeoForgeMod(ModContainer container, IEventBus modBus) {
         container.registerConfig(ModConfig.Type.COMMON, FcapServerConfig.SPEC, FcapServerConfig.FILE_NAME);
 
-        Main.init(new NeoForgeAttachmentAccessor());
+        Main.init(new NeoForgeAttachmentAccessor(), new NeoForgeVillagerAttachmentAccessor());
         NeoForge.EVENT_BUS.register(this);
         ModLootConditionTypes.REGISTRY.register(modBus);
         modBus.register(new LootProviders());

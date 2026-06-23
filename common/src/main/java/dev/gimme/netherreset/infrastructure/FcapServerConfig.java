@@ -66,6 +66,19 @@ public class FcapServerConfig implements ServerConfig {
                     into Nether structure chest and Piglin bartering loot tables. Setting this to false disables these custom additions.""")
             .define("extraLootEnabled", true);
 
+    private static final BooleanValue VILLAGER_BARGAIN_ENABLED = BUILDER
+            .comment("""
+                    When true, villager trades only restock based on "bargains" struck while socializing at the bell.
+                    Villagers start a profession with no stock, gain stock by bargaining with other professions, and
+                    lose it to daily decay. Setting this to false restores fully vanilla restocking.""")
+            .define("villagerBargainEnabled", true);
+
+    static final ModConfigSpec.IntValue VILLAGER_BARGAIN_CAP = BUILDER
+            .comment("""
+                    The most unique-profession bargains a villager can rack up per day. Also the ceiling on how much
+                    stock a single trade can restock to (each trade rolls 0..bargains).""")
+            .defineInRange("villagerBargainCap", 5, 0, 64);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     @Override
@@ -164,5 +177,15 @@ public class FcapServerConfig implements ServerConfig {
     @Override
     public boolean isExtraLootEnabled() {
         return EXTRA_LOOT_ENABLED.get();
+    }
+
+    @Override
+    public boolean villagerBargainEnabled() {
+        return VILLAGER_BARGAIN_ENABLED.get();
+    }
+
+    @Override
+    public int villagerBargainCap() {
+        return VILLAGER_BARGAIN_CAP.get();
     }
 }

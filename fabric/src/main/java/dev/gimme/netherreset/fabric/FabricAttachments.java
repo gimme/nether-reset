@@ -1,5 +1,6 @@
 package dev.gimme.netherreset.fabric;
 
+import dev.gimme.netherreset.domain.bargain.BargainData;
 import dev.gimme.netherreset.domain.inventory.DimInvData;
 import dev.gimme.netherreset.domain.util.Constants;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
@@ -14,5 +15,12 @@ public final class FabricAttachments {
                     .initializer(DimInvData::empty)
                     .persistent(DimInvData.CODEC)
                     .copyOnDeath()
+    );
+
+    public static final AttachmentType<BargainData> BARGAIN = AttachmentRegistry.create(
+            Identifier.fromNamespaceAndPath(Constants.MOD_ID, Constants.VILLAGER_BARGAIN_ID),
+            builder -> builder
+                    .initializer(BargainData::empty)
+                    .persistent(BargainData.CODEC)
     );
 }

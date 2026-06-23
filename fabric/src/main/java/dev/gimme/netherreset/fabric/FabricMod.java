@@ -16,7 +16,9 @@ public class FabricMod implements ModInitializer {
     public void onInitialize() {
         ConfigRegistry.INSTANCE.register(Constants.MOD_ID, ModConfig.Type.COMMON, FcapServerConfig.SPEC, FcapServerConfig.FILE_NAME);
 
-        Main.init(new FabricAttachmentAccessor(FabricAttachments.DIM_INV));
+        Main.init(
+                new FabricAttachmentAccessor(FabricAttachments.DIM_INV),
+                new FabricVillagerAttachmentAccessor(FabricAttachments.BARGAIN));
 
         // Register events
         ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL.register((player, origin, destination) -> {

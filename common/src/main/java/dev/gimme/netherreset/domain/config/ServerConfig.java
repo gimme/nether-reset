@@ -22,6 +22,9 @@ public interface ServerConfig {
 
     boolean isExtraLootEnabled();
 
+    boolean villagerBargainEnabled();
+    int villagerBargainCap();
+
     record GraceEffect(
             Identifier effectId,
             int duration,

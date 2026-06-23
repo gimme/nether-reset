@@ -6,6 +6,9 @@
   "mixins": [
     "CartographerTradePinMixin",
     "ItemTeleportMixin",
-    "VillagerTradeNerfMixin"
+    "MerchantOfferAccessor",
+    "VillagerBargainMixin",
+    "VillagerTradeNerfMixin",
+    "WorkAtPoiBargainMixin"
   ]
 }

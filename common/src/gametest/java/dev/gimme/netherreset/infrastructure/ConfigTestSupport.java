@@ -1,6 +1,7 @@
 package dev.gimme.netherreset.infrastructure;
 
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
+import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
 
 import java.util.List;
 
@@ -14,6 +15,8 @@ public final class ConfigTestSupport {
     public static final ConfigValue<List<? extends String>> GRACE_EFFECTS = FcapServerConfig.GRACE_EFFECTS;
 
     public static final ConfigValue<List<? extends String>> NETHER_STARTER_ITEMS = FcapServerConfig.NETHER_STARTER_ITEMS;
+
+    public static final IntValue VILLAGER_BARGAIN_CAP = FcapServerConfig.VILLAGER_BARGAIN_CAP;
 
     private ConfigTestSupport() {
     }
