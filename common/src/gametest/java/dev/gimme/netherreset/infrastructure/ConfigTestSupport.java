@@ -1,5 +1,6 @@
 package dev.gimme.netherreset.infrastructure;
 
+import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 
 import java.util.List;
@@ -14,6 +15,12 @@ public final class ConfigTestSupport {
     public static final ConfigValue<List<? extends String>> GRACE_EFFECTS = FcapServerConfig.GRACE_EFFECTS;
 
     public static final ConfigValue<List<? extends String>> NETHER_STARTER_ITEMS = FcapServerConfig.NETHER_STARTER_ITEMS;
+
+    public static final BooleanValue PREVENT_OTHER_ENTITIES_FROM_TELEPORTING = FcapServerConfig.PREVENT_OTHER_ENTITIES_FROM_TELEPORTING;
+
+    public static final BooleanValue ALLOW_ENTITIES_TELEPORT_TO_NETHER = FcapServerConfig.ALLOW_ENTITIES_TELEPORT_TO_NETHER;
+
+    public static final BooleanValue CLEAR_ENTITY_ITEMS_ON_TELEPORT = FcapServerConfig.CLEAR_ENTITY_ITEMS_ON_TELEPORT;
 
     private ConfigTestSupport() {
     }

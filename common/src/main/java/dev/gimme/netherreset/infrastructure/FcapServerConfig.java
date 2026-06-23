@@ -28,17 +28,25 @@ public class FcapServerConfig implements ServerConfig {
             .comment("If items should be prevented from traveling through portals.")
             .define("preventItemsFromTeleporting", true);
 
-    private static final BooleanValue PREVENT_OTHER_ENTITIES_FROM_TELEPORTING = BUILDER
+    static final BooleanValue PREVENT_OTHER_ENTITIES_FROM_TELEPORTING = BUILDER
             .comment("If other entities (e.g., mobs) should be prevented from traveling through portals.")
             .define("preventOtherEntitiesFromTeleporting", true);
 
-    private static final BooleanValue ALLOW_ENTITIES_TELEPORT_TO_NETHER = BUILDER
+    static final BooleanValue ALLOW_ENTITIES_TELEPORT_TO_NETHER = BUILDER
             .comment("If items and other entities should always be allowed to teleport TO the Nether (one direction).")
             .define("allowEntitiesTeleportToNether", false);
 
     private static final BooleanValue ALLOW_ENTITIES_TELEPORT_FROM_NETHER = BUILDER
             .comment("If items and other entities should always be allowed to teleport FROM the Nether (one direction).")
             .define("allowEntitiesTeleportFromNether", false);
+
+    static final BooleanValue CLEAR_ENTITY_ITEMS_ON_TELEPORT = BUILDER
+            .comment("""
+                    If a non-player entity that is allowed to travel through a Nether portal should have its carried
+                    items wiped on the way (held/worn equipment, plus any container inventory such as a chested horse
+                    or chest minecart). Prevents using mobs and vehicles to smuggle items past the per-dimension reset.
+                    Only takes effect when something above lets the entity teleport in the first place.""")
+            .define("clearEntityItemsOnTeleport", true);
 
     static final ModConfigSpec.ConfigValue<List<? extends String>> NETHER_STARTER_ITEMS = BUILDER
             .comment("""
@@ -86,6 +94,11 @@ public class FcapServerConfig implements ServerConfig {
     @Override
     public boolean allowEntitiesTeleportFromNether() {
         return ALLOW_ENTITIES_TELEPORT_FROM_NETHER.get();
+    }
+
+    @Override
+    public boolean clearEntityItemsOnTeleport() {
+        return CLEAR_ENTITY_ITEMS_ON_TELEPORT.get();
     }
 
     @Override

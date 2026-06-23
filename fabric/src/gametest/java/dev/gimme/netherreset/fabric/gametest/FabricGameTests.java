@@ -19,4 +19,14 @@ public final class FabricGameTests {
     public void dimensionInventoriesStayIsolatedAcrossCrossings(GameTestHelper helper) {
         NetherResetGameTests.dimensionInventoriesStayIsolatedAcrossCrossings(helper);
     }
+
+    @GameTest
+    public void allowedEntityCrossingStripsCarriedItems(GameTestHelper helper) {
+        NetherResetGameTests.allowedEntityCrossingStripsCarriedItems(helper);
+    }
+
+    @GameTest
+    public void allowedEntityKeepsItemsWhenClearingDisabled(GameTestHelper helper) {
+        NetherResetGameTests.allowedEntityKeepsItemsWhenClearingDisabled(helper);
+    }
 }

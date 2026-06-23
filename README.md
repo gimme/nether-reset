@@ -21,6 +21,7 @@ Some loot tables are supplemented with extra brewing ingredients that would othe
 - Cartographer offers Ancient City Map when reaching Expert level
 - Dying in one dimension does not affect the inventory of the other dimension
 - Dropped items (and other entities) cannot enter portals
+- Entities allowed through portals (when configured) are stripped of any items they carry, so they can't smuggle loot
 - When you first enter the Nether, you get a grace period of 60 seconds with fire resistance
 - Fortress chests have a chance to contain Water Bottles
 - Bastion chests have a chance to contain Glistering Melon Slices

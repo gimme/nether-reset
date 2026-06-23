@@ -35,7 +35,9 @@ public final class NeoForgeGameTests {
 
     private static final List<Test> TESTS = List.of(
             new Test("first_nether_entry_swaps_inventory_and_applies_grace", 20, NetherResetGameTests::firstNetherEntrySwapsInventoryAndAppliesGrace),
-            new Test("dimension_inventories_stay_isolated_across_crossings", 20, NetherResetGameTests::dimensionInventoriesStayIsolatedAcrossCrossings));
+            new Test("dimension_inventories_stay_isolated_across_crossings", 20, NetherResetGameTests::dimensionInventoriesStayIsolatedAcrossCrossings),
+            new Test("allowed_entity_crossing_strips_carried_items", 20, NetherResetGameTests::allowedEntityCrossingStripsCarriedItems),
+            new Test("allowed_entity_keeps_items_when_clearing_disabled", 20, NetherResetGameTests::allowedEntityKeepsItemsWhenClearingDisabled));
 
     private NeoForgeGameTests() {
     }

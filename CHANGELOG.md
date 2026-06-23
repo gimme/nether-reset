@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-Added Ancient City Map to Cartographer's Expert trade set.
+- Added Ancient City Map to Cartographer's Expert trade set.
+- Added `clearEntityItemsOnTeleport` config (default on): entities allowed through a Nether portal have their carried items wiped (held/worn equipment plus container inventories like chested horses and chest minecarts), so they can't be used to smuggle items past the inventory reset.
 
 ## [v1.21.11-0.1.2] - 2026-02-21
 

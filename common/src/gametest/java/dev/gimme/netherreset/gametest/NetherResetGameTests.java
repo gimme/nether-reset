@@ -4,13 +4,19 @@ import com.mojang.authlib.GameProfile;
 import dev.gimme.netherreset.Main;
 import dev.gimme.netherreset.infrastructure.ConfigTestSupport;
 import io.netty.channel.embedded.EmbeddedChannel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.world.Container;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -82,6 +88,60 @@ public final class NetherResetGameTests {
         Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, Level.OVERWORLD, Level.NETHER);
         helper.assertTrue(ItemStack.matches(player.getInventory().getItem(0), new ItemStack(Items.NETHERITE_SCRAP, 2)),
                 "the Nether inventory should still hold what was gathered there");
+        helper.succeed();
+    }
+
+    /**
+     * When a non-player entity is allowed through a Nether portal, {@code clearEntityItemsOnTeleport} wipes
+     * everything it carries — both worn/held equipment (a zombie's sword and helmet) and a container
+     * inventory (a chest minecart's contents) — so it can't smuggle loot past the per-dimension reset.
+     */
+    public static void allowedEntityCrossingStripsCarriedItems(GameTestHelper helper) {
+        try (var _ = ConfigTestSupport.override(ConfigTestSupport.PREVENT_OTHER_ENTITIES_FROM_TELEPORTING, false);
+             var _ = ConfigTestSupport.override(ConfigTestSupport.CLEAR_ENTITY_ITEMS_ON_TELEPORT, true)) {
+
+            LivingEntity zombie = helper.spawn(EntityTypes.ZOMBIE, new BlockPos(1, 2, 1));
+            zombie.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.DIAMOND_SWORD));
+            zombie.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.DIAMOND_HELMET));
+
+            Entity minecart = helper.spawn(EntityTypes.CHEST_MINECART, new BlockPos(3, 2, 1));
+            ((Container) minecart).setItem(0, new ItemStack(Items.DIAMOND, 3));
+
+            boolean zombieBlocked =
+                    Main.INSTANCE.getEntityHandler().shouldBlockNetherTeleport(zombie, Level.OVERWORLD, Level.NETHER);
+            boolean minecartBlocked =
+                    Main.INSTANCE.getEntityHandler().shouldBlockNetherTeleport(minecart, Level.OVERWORLD, Level.NETHER);
+
+            helper.assertFalse(zombieBlocked, "with mob teleporting allowed, the zombie should be let through");
+            helper.assertFalse(minecartBlocked, "with mob teleporting allowed, the chest minecart should be let through");
+            helper.assertTrue(zombie.getItemBySlot(EquipmentSlot.MAINHAND).isEmpty(),
+                    "the zombie's held weapon should have been wiped on the crossing");
+            helper.assertTrue(zombie.getItemBySlot(EquipmentSlot.HEAD).isEmpty(),
+                    "the zombie's worn armor should have been wiped on the crossing");
+            helper.assertTrue(((Container) minecart).getItem(0).isEmpty(),
+                    "the chest minecart's contents should have been wiped on the crossing");
+        }
+        helper.succeed();
+    }
+
+    /**
+     * With {@code clearEntityItemsOnTeleport} off, an allowed entity keeps what it carries — the wipe is
+     * strictly opt-out, so disabling it lets pack animals and the like haul cargo through as before.
+     */
+    public static void allowedEntityKeepsItemsWhenClearingDisabled(GameTestHelper helper) {
+        try (var _ = ConfigTestSupport.override(ConfigTestSupport.PREVENT_OTHER_ENTITIES_FROM_TELEPORTING, false);
+             var _ = ConfigTestSupport.override(ConfigTestSupport.CLEAR_ENTITY_ITEMS_ON_TELEPORT, false)) {
+
+            LivingEntity zombie = helper.spawn(EntityTypes.ZOMBIE, new BlockPos(1, 2, 1));
+            zombie.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.DIAMOND_SWORD));
+
+            boolean blocked =
+                    Main.INSTANCE.getEntityHandler().shouldBlockNetherTeleport(zombie, Level.OVERWORLD, Level.NETHER);
+
+            helper.assertFalse(blocked, "with mob teleporting allowed, the zombie should be let through");
+            helper.assertTrue(ItemStack.matches(zombie.getItemBySlot(EquipmentSlot.MAINHAND), new ItemStack(Items.DIAMOND_SWORD)),
+                    "with item clearing disabled, the zombie should still be holding its weapon");
+        }
         helper.succeed();
     }
 
