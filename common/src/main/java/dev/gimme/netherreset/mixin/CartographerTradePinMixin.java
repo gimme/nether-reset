@@ -1,5 +1,6 @@
 package dev.gimme.netherreset.mixin;
 
+import dev.gimme.netherreset.Main;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -39,6 +40,7 @@ public class CartographerTradePinMixin {
 
     @Inject(method = "addOffersFromTradeSet", at = @At("TAIL"))
     private void pinCartographerTrades(ServerLevel level, MerchantOffers offers, ResourceKey<TradeSet> resourceKey, CallbackInfo ci) {
+        if (!Main.INSTANCE.getServerConfig().isAncientCityMapTradeEnabled()) return;
         if (resourceKey.equals(TradeSets.CARTOGRAPHER_LEVEL_4)) {
             // Pin the Ancient City Map trades to the Expert level.
             nether_reset$addOffer(level, offers, OCEAN_ANCIENT_CITY_MAP_TRADE);

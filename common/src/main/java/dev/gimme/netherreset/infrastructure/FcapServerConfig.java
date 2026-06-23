@@ -74,6 +74,12 @@ public class FcapServerConfig implements ServerConfig {
                     into Nether structure chest and Piglin bartering loot tables. Setting this to false disables these custom additions.""")
             .define("extraLootEnabled", true);
 
+    private static final BooleanValue ANCIENT_CITY_MAP_TRADE_ENABLED = BUILDER
+            .comment("""
+                    When true, Cartographer villagers offer Ancient City Map trades pinned to their Expert (level 4)
+                    tier, giving players a reliable way to locate Ancient Cities. Setting this to false removes those trades.""")
+            .define("ancientCityMapTradeEnabled", true);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     @Override
@@ -177,5 +183,10 @@ public class FcapServerConfig implements ServerConfig {
     @Override
     public boolean isExtraLootEnabled() {
         return EXTRA_LOOT_ENABLED.get();
+    }
+
+    @Override
+    public boolean isAncientCityMapTradeEnabled() {
+        return ANCIENT_CITY_MAP_TRADE_ENABLED.get();
     }
 }

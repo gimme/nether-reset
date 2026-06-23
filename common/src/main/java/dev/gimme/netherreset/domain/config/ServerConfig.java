@@ -23,6 +23,8 @@ public interface ServerConfig {
 
     boolean isExtraLootEnabled();
 
+    boolean isAncientCityMapTradeEnabled();
+
     record GraceEffect(
             Identifier effectId,
             int duration,
