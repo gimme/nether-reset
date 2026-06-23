@@ -19,39 +19,4 @@ public final class FabricGameTests {
     public void dimensionInventoriesStayIsolatedAcrossCrossings(GameTestHelper helper) {
         NetherResetGameTests.dimensionInventoriesStayIsolatedAcrossCrossings(helper);
     }
-
-    @GameTest
-    public void bargainsAccrueAcrossProfessionsButNotDuplicatesOrSelf(GameTestHelper helper) {
-        NetherResetGameTests.bargainsAccrueAcrossProfessionsButNotDuplicatesOrSelf(helper);
-    }
-
-    @GameTest
-    public void plainVillagersAreWildcardPartners(GameTestHelper helper) {
-        NetherResetGameTests.plainVillagersAreWildcardPartners(helper);
-    }
-
-    @GameTest
-    public void bargainCapIsRespected(GameTestHelper helper) {
-        NetherResetGameTests.bargainCapIsRespected(helper);
-    }
-
-    @GameTest
-    public void tradesStartEmptyAndRestockScalesWithBargains(GameTestHelper helper) {
-        NetherResetGameTests.tradesStartEmptyAndRestockScalesWithBargains(helper);
-    }
-
-    @GameTest
-    public void isolatedVillagerCannotRefillWithoutBargains(GameTestHelper helper) {
-        NetherResetGameTests.isolatedVillagerCannotRefillWithoutBargains(helper);
-    }
-
-    @GameTest
-    public void professionChangeResetsBargainsAndStock(GameTestHelper helper) {
-        NetherResetGameTests.professionChangeResetsBargainsAndStock(helper);
-    }
-
-    @GameTest
-    public void tradeUseFeedsVanillaDemand(GameTestHelper helper) {
-        NetherResetGameTests.tradeUseFeedsVanillaDemand(helper);
-    }
 }

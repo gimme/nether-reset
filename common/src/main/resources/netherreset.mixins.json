@@ -5,10 +5,6 @@
   "compatibilityLevel": "JAVA_${java_version}",
   "mixins": [
     "CartographerTradePinMixin",
-    "ItemTeleportMixin",
-    "MerchantOfferAccessor",
-    "VillagerBargainMixin",
-    "VillagerTradeNerfMixin",
-    "WorkAtPoiBargainMixin"
+    "ItemTeleportMixin"
   ]
 }

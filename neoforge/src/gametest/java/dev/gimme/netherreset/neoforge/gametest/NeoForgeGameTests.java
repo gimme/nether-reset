@@ -35,14 +35,7 @@ public final class NeoForgeGameTests {
 
     private static final List<Test> TESTS = List.of(
             new Test("first_nether_entry_swaps_inventory_and_applies_grace", 20, NetherResetGameTests::firstNetherEntrySwapsInventoryAndAppliesGrace),
-            new Test("dimension_inventories_stay_isolated_across_crossings", 20, NetherResetGameTests::dimensionInventoriesStayIsolatedAcrossCrossings),
-            new Test("bargains_accrue_across_professions_but_not_duplicates_or_self", 100, NetherResetGameTests::bargainsAccrueAcrossProfessionsButNotDuplicatesOrSelf),
-            new Test("plain_villagers_are_wildcard_partners", 100, NetherResetGameTests::plainVillagersAreWildcardPartners),
-            new Test("bargain_cap_is_respected", 100, NetherResetGameTests::bargainCapIsRespected),
-            new Test("trades_start_empty_and_restock_scales_with_bargains", 100, NetherResetGameTests::tradesStartEmptyAndRestockScalesWithBargains),
-            new Test("isolated_villager_cannot_refill_without_bargains", 100, NetherResetGameTests::isolatedVillagerCannotRefillWithoutBargains),
-            new Test("profession_change_resets_bargains_and_stock", 100, NetherResetGameTests::professionChangeResetsBargainsAndStock),
-            new Test("trade_use_feeds_vanilla_demand", 100, NetherResetGameTests::tradeUseFeedsVanillaDemand));
+            new Test("dimension_inventories_stay_isolated_across_crossings", 20, NetherResetGameTests::dimensionInventoriesStayIsolatedAcrossCrossings));
 
     private NeoForgeGameTests() {
     }

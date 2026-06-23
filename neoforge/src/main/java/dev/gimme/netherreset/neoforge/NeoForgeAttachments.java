@@ -1,6 +1,5 @@
 package dev.gimme.netherreset.neoforge;
 
-import dev.gimme.netherreset.domain.bargain.BargainData;
 import dev.gimme.netherreset.domain.inventory.DimInvData;
 import dev.gimme.netherreset.domain.util.Constants;
 import net.neoforged.bus.api.IEventBus;
@@ -20,13 +19,6 @@ public final class NeoForgeAttachments {
                     () -> AttachmentType.builder(DimInvData::empty)
                             .serialize(DimInvData.CODEC.fieldOf("data"))
                             .copyOnDeath()
-                            .build()
-            );
-
-    public static final Supplier<AttachmentType<BargainData>> BARGAIN =
-            ATTACHMENT_TYPES.register(Constants.VILLAGER_BARGAIN_ID,
-                    () -> AttachmentType.builder(BargainData::empty)
-                            .serialize(BargainData.CODEC.fieldOf("data"))
                             .build()
             );
 
