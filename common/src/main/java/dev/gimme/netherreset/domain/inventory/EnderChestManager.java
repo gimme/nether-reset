@@ -4,6 +4,7 @@ import dev.gimme.netherreset.application.PlayerAttachmentAccessor;
 import dev.gimme.netherreset.domain.config.ServerConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -12,10 +13,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.structure.Structure;
 
 /**
@@ -158,11 +159,15 @@ public class EnderChestManager {
         boolean hasItems = stash.items().stream().anyMatch(item -> !item.isEmpty());
         if (!hasItems) return false; // nothing to recover; the caller reports this and consumes the click
 
+        // Use Containers.dropContents, not Block.popResource: popResource obeys the doTileDrops gamerule, so on a
+        // server with block drops off a recovery would silently void the stash. Copy the stacks — dropContents
+        // drains the ones it is handed.
         Level level = player.level();
+        NonNullList<ItemStack> drops = NonNullList.create();
         for (ItemStack item : stash.items()) {
-            if (item.isEmpty()) continue;
-            Block.popResource(level, chestPos, item.copy()); // spit it out of the chest
+            if (!item.isEmpty()) drops.add(item.copy());
         }
+        Containers.dropContents(level, chestPos, drops);
         DimInvData emptied = onNetherSide
                 ? data.withStashedOverworldEnder(InventorySnapshot.empty()) // stay isolated, just emptied
                 : data.withNetherEnder(InventorySnapshot.empty());
@@ -171,7 +176,10 @@ public class EnderChestManager {
         if (heldItem.is(Items.ECHO_SHARD)) heldItem.shrink(1); // the Recovery Compass is reusable; the shard is not
 
         playLockSound(level, chestPos);
-        level.playSound(null, chestPos, SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1.0F, 0.5F);
+        // Jitter upward only: 0.5 is the engine's pitch floor, so a symmetric jitter would be half-eaten by the
+        // clamp; staying just above it keeps the sound low but slightly varied.
+        float openPitch = 0.5F + level.getRandom().nextFloat() * 0.1F;
+        level.playSound(null, chestPos, SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1.0F, openPitch);
         return true;
     }
 
