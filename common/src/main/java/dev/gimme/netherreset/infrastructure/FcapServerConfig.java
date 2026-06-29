@@ -87,6 +87,13 @@ public class FcapServerConfig implements ServerConfig {
             tier, giving players a reliable way to locate Ancient Cities. Setting this to false removes those trades.""")
         .define("ancientCityMapTradeEnabled", true);
 
+    private static final BooleanValue CARTOGRAPHER_LEVELING_TRADE_ENABLED = BUILDER
+        .comment("""
+            When true, Apprentice (level 2) Cartographer villagers that didn't roll the vanilla Glass Pane -> Emerald
+            trade get an equivalent 8 Amethyst Shard -> Emerald trade instead, so the Cartographer can always be
+            leveled up without committing to an explorer-map run. Setting this to false removes that fallback trade.""")
+        .define("cartographerLevelingTradeEnabled", true);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     @Override
@@ -200,5 +207,10 @@ public class FcapServerConfig implements ServerConfig {
     @Override
     public boolean isAncientCityMapTradeEnabled() {
         return ANCIENT_CITY_MAP_TRADE_ENABLED.get();
+    }
+
+    @Override
+    public boolean isCartographerLevelingTradeEnabled() {
+        return CARTOGRAPHER_LEVELING_TRADE_ENABLED.get();
     }
 }

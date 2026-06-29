@@ -26,6 +26,7 @@ Some loot tables are supplemented with extra brewing ingredients that would othe
 - The Nether has its own Ender Chest; recover its contents in the Overworld with a Recovery Compass or Echo Shard, so it can only take items out of the Nether, never in
 - Each Ancient City contains an Ender Chest
 - Cartographer offers Ancient City Map when reaching Expert level
+- Apprentice Cartographers that lack the Glass Pane → Emerald trade get an Amethyst Shard → Emerald trade instead, so they can always be leveled up affordably
 - Dying in one dimension does not affect the inventory of the other dimension
 - Dropped items (and other entities) cannot enter portals
 - Entities allowed through portals (when configured) are stripped of any items they carry, so they can't smuggle loot

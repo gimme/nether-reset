@@ -1,12 +1,16 @@
 package dev.gimme.netherreset.mixin;
 
 import dev.gimme.netherreset.Main;
+import dev.gimme.netherreset.domain.config.ServerConfig;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.npc.villager.AbstractVillager;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.item.trading.VillagerTrade;
@@ -25,8 +29,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Optional;
 
 /**
- * Pins the Ancient City Map trades to the Cartographer's Expert trade set, to provide a way for players to
- * consistently find the structure.
+ * Adds extra Cartographer trades:
+ * <ul>
+ *     <li>Ancient City Map trades pinned to the Expert (level 4) trade set, to give players a way to consistently
+ *     find the structure.</li>
+ *     <li>A fallback Amethyst Shard -&gt; Emerald trade at the Apprentice (level 2) tier, added only when the
+ *     Cartographer didn't roll the vanilla Glass Pane -&gt; Emerald trade, so it can always be leveled up cheaply
+ *     instead of having to commit to an explorer-map run.</li>
+ * </ul>
  */
 @Mixin(AbstractVillager.class)
 public class CartographerTradePinMixin {
@@ -40,12 +50,27 @@ public class CartographerTradePinMixin {
 
     @Inject(method = "addOffersFromTradeSet", at = @At("TAIL"))
     private void pinCartographerTrades(ServerLevel level, MerchantOffers offers, ResourceKey<TradeSet> resourceKey, CallbackInfo ci) {
-        if (!Main.INSTANCE.getServerConfig().isAncientCityMapTradeEnabled()) return;
+        ServerConfig config = Main.INSTANCE.getServerConfig();
         if (resourceKey.equals(TradeSets.CARTOGRAPHER_LEVEL_4)) {
+            if (!config.isAncientCityMapTradeEnabled()) return;
             // Pin the Ancient City Map trades to the Expert level.
             nether_reset$addOffer(level, offers, OCEAN_ANCIENT_CITY_MAP_TRADE);
             nether_reset$addOffer(level, offers, TRIAL_ANCIENT_CITY_MAP_TRADE);
+        } else if (resourceKey.equals(TradeSets.CARTOGRAPHER_LEVEL_2)) {
+            if (!config.isCartographerLevelingTradeEnabled()) return;
+            // The Apprentice pool can surface the cheap Glass Pane -> Emerald leveling trade or one of several
+            // (biome-gated) explorer/village map trades, so a Cartographer doesn't always roll the leveling trade.
+            // When it didn't, add an equivalent Amethyst Shard -> Emerald trade so it can still be leveled up affordably.
+            if (!nether_reset$hasGlassPaneEmeraldTrade(offers)) {
+                offers.add(new MerchantOffer(new ItemCost(Items.AMETHYST_SHARD, 8), new ItemStack(Items.EMERALD), 12, 10, 0.05f));
+            }
         }
+    }
+
+    @Unique
+    private static boolean nether_reset$hasGlassPaneEmeraldTrade(MerchantOffers offers) {
+        return offers.stream()
+            .anyMatch(offer -> offer.getResult().is(Items.EMERALD) && offer.getBaseCostA().is(Items.GLASS_PANE));
     }
 
     @Unique

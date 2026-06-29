@@ -26,6 +26,8 @@ public interface ServerConfig {
 
     boolean isAncientCityMapTradeEnabled();
 
+    boolean isCartographerLevelingTradeEnabled();
+
     record GraceEffect(
             Identifier effectId,
             int duration,
