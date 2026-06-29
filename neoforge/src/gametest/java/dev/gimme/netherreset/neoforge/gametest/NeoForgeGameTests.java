@@ -39,6 +39,7 @@ public final class NeoForgeGameTests {
             new Test("nether_ender_chest_isolates_from_overworld", 20, NetherResetGameTests::netherEnderChestIsolatesFromOverworld),
             new Test("recovery_compass_spits_out_nether_stash", 20, NetherResetGameTests::recoveryCompassSpitsOutNetherStash),
             new Test("echo_shard_recovery_consumes_the_shard", 20, NetherResetGameTests::echoShardRecoveryConsumesTheShard),
+            new Test("recovery_from_nether_side_spits_out_overworld_stash", 20, NetherResetGameTests::recoveryFromNetherSideSpitsOutOverworldStash),
             new Test("nether_ender_restored_on_respawn_out_of_nether", 20, NetherResetGameTests::netherEnderRestoredOnRespawnOutOfNether),
             new Test("ender_chest_stays_shared_when_isolation_disabled", 20, NetherResetGameTests::enderChestStaysSharedWhenIsolationDisabled),
             new Test("allowed_entity_crossing_strips_carried_items", 20, NetherResetGameTests::allowedEntityCrossingStripsCarriedItems),

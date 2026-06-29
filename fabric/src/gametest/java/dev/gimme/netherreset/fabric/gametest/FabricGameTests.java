@@ -36,6 +36,11 @@ public final class FabricGameTests {
     }
 
     @GameTest
+    public void recoveryFromNetherSideSpitsOutOverworldStash(GameTestHelper helper) {
+        NetherResetGameTests.recoveryFromNetherSideSpitsOutOverworldStash(helper);
+    }
+
+    @GameTest
     public void netherEnderRestoredOnRespawnOutOfNether(GameTestHelper helper) {
         NetherResetGameTests.netherEnderRestoredOnRespawnOutOfNether(helper);
     }

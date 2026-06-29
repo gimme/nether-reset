@@ -19,22 +19,23 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.structure.Structure;
 
 /**
- * Gives the Nether its own Ender Chest and gates extraction behind a deliberate ritual, so the Ender Chest can
- * only be used to take resources OUT of the Nether, never to carry them in.
+ * Gives the Nether its own Ender Chest and gates transfer behind a deliberate, key-only ritual. The ritual is
+ * symmetric — it extracts whichever side you are <em>not</em> currently on — but because the keys exist only in
+ * the Overworld (Ancient Cities) and can't be carried across, in practice resources only ever travel OUT of the
+ * Nether, never in.
  *
  * <p>The Ender Chest is the single storage vanilla shares across every dimension, so left alone it moves items in
  * <em>both</em> directions. Instead, the contents are swapped on each Nether crossing exactly like the player's
  * inventory already is: in the Nether you get a separate Ender Chest (your "Nether stash"), and your Overworld
  * contents are set aside. Nothing is auto-merged and nothing is ever dropped on a crossing.
  *
- * <p>To extract, the player performs an explicit ritual outside the Nether: right-clicking an Ender Chest with
- * a Recovery Compass (reusable) or an Echo Shard (consumed) spits their whole Nether stash out of the chest as
- * item drops. Because the only thing that moves the stash is this one-way ritual, items can never travel the other
- * way. The ritual works at <em>any</em> Ender Chest in any non-Nether dimension, and a key click always attempts
- * recovery rather than opening the chest, so its feedback (the stash spilling out, or a note that it's empty) is
- * never hidden behind the chest UI. The Ancient City Ender Chest — the guaranteed first one a player meets — is
- * additionally held shut even with an empty hand, showing a hint that teaches the ritual; every other Ender Chest
- * opens normally when used without a key.
+ * <p>To transfer, the player performs an explicit ritual: right-clicking an Ender Chest with a Recovery Compass
+ * (reusable) or an Echo Shard (consumed) spits the <em>other</em> side's stash out of the chest as item drops —
+ * the Nether stash when used outside the Nether, the set-aside Overworld contents when used inside it. A key click
+ * works at <em>any</em> Ender Chest and always attempts recovery rather than opening the chest, so its feedback
+ * (the stash spilling out, or a note that it's empty) is never hidden behind the chest UI. The Ancient City Ender
+ * Chest — the guaranteed first one a player meets — is additionally held shut even with an empty hand, showing a
+ * hint that teaches the ritual; every other Ender Chest opens normally when used without a key.
  *
  * <p>The config is only consulted when entering the Nether (whether to isolate) and on the ritual. The restore on
  * the way out always runs whenever the player is isolated, so toggling the feature off never strands a player's
@@ -91,22 +92,19 @@ public class EnderChestManager {
      * Handles a right-click on an Ender Chest with an item in hand. Returns {@code true} if the interaction was
      * consumed (the chest should NOT open), {@code false} to let the chest open as normal.
      *
-     * <p>Using a key (Recovery Compass or Echo Shard) is always taken as a recovery attempt, anywhere: it never
-     * opens the chest, so its feedback — the stash spilling out, or a note that there's nothing to recover yet —
-     * is never buried under the chest UI. Without a key, only the Ancient City chest is held shut (with a hint to
-     * teach the ritual); every other Ender Chest stays a normal chest.
+     * <p>Using a key (Recovery Compass or Echo Shard) is always taken as a recovery attempt: it spills the other
+     * side's stash out as drops rather than opening the chest, so its feedback is never buried under the chest UI.
+     * Without a key, only the Ancient City chest is held shut (with a hint to teach the ritual); every other Ender
+     * Chest stays a normal chest.
      */
     public boolean onUseEnderChest(ServerPlayer player, ItemStack heldItem, BlockPos chestPos) {
         if (!serverConfig.isolateNetherEnderChest()) return false; // feature off: vanilla Ender Chest
-        if (player.level().dimension() == Level.NETHER) return false; // in the Nether the chest opens normally
 
         boolean usingKey = heldItem.is(Items.RECOVERY_COMPASS) || heldItem.is(Items.ECHO_SHARD);
         if (usingKey) {
-            // A key click is always a recovery attempt, so it consumes the interaction wherever the player is —
-            // the feedback never gets hidden behind the chest UI.
             if (!recover(player, heldItem, chestPos)) {
                 playLockSound(player.level(), chestPos);
-                player.sendSystemMessage(EMPTY_STASH_MESSAGE, true); // nothing to recover yet
+                player.sendSystemMessage(EMPTY_STASH_MESSAGE, true); // nothing to recover
             }
             return true;
         }
@@ -150,7 +148,13 @@ public class EnderChestManager {
 
     private boolean recover(ServerPlayer player, ItemStack heldItem, BlockPos chestPos) {
         DimInvData data = playerAttachmentAccessor.getOrCreateDimInvData(player);
-        InventorySnapshot stash = data.netherEnder().orElseGet(InventorySnapshot::empty);
+
+        // Spill the side the player is NOT on: the set-aside Overworld chest while isolated in the Nether,
+        // otherwise the persisted Nether stash. stashedOverworldEnder is present exactly while on the Nether side.
+        boolean onNetherSide = data.stashedOverworldEnder().isPresent();
+        InventorySnapshot stash = (onNetherSide ? data.stashedOverworldEnder() : data.netherEnder())
+                .orElseGet(InventorySnapshot::empty);
+
         boolean hasItems = stash.items().stream().anyMatch(item -> !item.isEmpty());
         if (!hasItems) return false; // nothing to recover; the caller reports this and consumes the click
 
@@ -159,7 +163,10 @@ public class EnderChestManager {
             if (item.isEmpty()) continue;
             Block.popResource(level, chestPos, item.copy()); // spit it out of the chest
         }
-        playerAttachmentAccessor.setDimInvData(player, data.withNetherEnder(InventorySnapshot.empty()));
+        DimInvData emptied = onNetherSide
+                ? data.withStashedOverworldEnder(InventorySnapshot.empty()) // stay isolated, just emptied
+                : data.withNetherEnder(InventorySnapshot.empty());
+        playerAttachmentAccessor.setDimInvData(player, emptied);
 
         if (heldItem.is(Items.ECHO_SHARD)) heldItem.shrink(1); // the Recovery Compass is reusable; the shard is not
 
