@@ -21,6 +21,31 @@ public final class FabricGameTests {
     }
 
     @GameTest
+    public void netherEnderChestIsolatesFromOverworld(GameTestHelper helper) {
+        NetherResetGameTests.netherEnderChestIsolatesFromOverworld(helper);
+    }
+
+    @GameTest
+    public void recoveryCompassSpitsOutNetherStash(GameTestHelper helper) {
+        NetherResetGameTests.recoveryCompassSpitsOutNetherStash(helper);
+    }
+
+    @GameTest
+    public void echoShardRecoveryConsumesTheShard(GameTestHelper helper) {
+        NetherResetGameTests.echoShardRecoveryConsumesTheShard(helper);
+    }
+
+    @GameTest
+    public void netherEnderRestoredOnRespawnOutOfNether(GameTestHelper helper) {
+        NetherResetGameTests.netherEnderRestoredOnRespawnOutOfNether(helper);
+    }
+
+    @GameTest
+    public void enderChestStaysSharedWhenIsolationDisabled(GameTestHelper helper) {
+        NetherResetGameTests.enderChestStaysSharedWhenIsolationDisabled(helper);
+    }
+
+    @GameTest
     public void allowedEntityCrossingStripsCarriedItems(GameTestHelper helper) {
         NetherResetGameTests.allowedEntityCrossingStripsCarriedItems(helper);
     }

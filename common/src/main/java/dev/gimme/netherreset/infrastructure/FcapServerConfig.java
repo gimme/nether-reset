@@ -25,60 +25,67 @@ public class FcapServerConfig implements ServerConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     private static final BooleanValue PREVENT_ITEMS_FROM_TELEPORTING = BUILDER
-            .comment("If items should be prevented from traveling through portals.")
-            .define("preventItemsFromTeleporting", true);
+        .comment("If items should be prevented from traveling through portals.")
+        .define("preventItemsFromTeleporting", true);
 
     static final BooleanValue PREVENT_OTHER_ENTITIES_FROM_TELEPORTING = BUILDER
-            .comment("If other entities (e.g., mobs) should be prevented from traveling through portals.")
-            .define("preventOtherEntitiesFromTeleporting", true);
+        .comment("If other entities (e.g., mobs) should be prevented from traveling through portals.")
+        .define("preventOtherEntitiesFromTeleporting", true);
 
     static final BooleanValue ALLOW_ENTITIES_TELEPORT_TO_NETHER = BUILDER
-            .comment("If items and other entities should always be allowed to teleport TO the Nether (one direction).")
-            .define("allowEntitiesTeleportToNether", false);
+        .comment("If items and other entities should always be allowed to teleport TO the Nether (one direction).")
+        .define("allowEntitiesTeleportToNether", false);
 
     private static final BooleanValue ALLOW_ENTITIES_TELEPORT_FROM_NETHER = BUILDER
-            .comment("If items and other entities should always be allowed to teleport FROM the Nether (one direction).")
-            .define("allowEntitiesTeleportFromNether", false);
+        .comment("If items and other entities should always be allowed to teleport FROM the Nether (one direction).")
+        .define("allowEntitiesTeleportFromNether", false);
 
     static final BooleanValue CLEAR_ENTITY_ITEMS_ON_TELEPORT = BUILDER
-            .comment("""
-                    If a non-player entity that is allowed to travel through a Nether portal should have its carried
-                    items wiped on the way (held/worn equipment, plus any container inventory such as a chested horse
-                    or chest minecart). Prevents using mobs and vehicles to smuggle items past the per-dimension reset.
-                    Only takes effect when something above lets the entity teleport in the first place.""")
-            .define("clearEntityItemsOnTeleport", true);
+        .comment("""
+            If a non-player entity that is allowed to travel through a Nether portal should have its carried
+            items wiped on the way (held/worn equipment, plus any container inventory such as a chested horse
+            or chest minecart). Prevents using mobs and vehicles to smuggle items past the per-dimension reset.
+            Only takes effect when something above lets the entity teleport in the first place.""")
+        .define("clearEntityItemsOnTeleport", true);
+
+    static final BooleanValue ISOLATE_NETHER_ENDER_CHEST = BUILDER
+        .comment("""
+            If the Nether should get its own, separate Ender Chest inventory so items can't be carried into the Nether.
+            Right-click an Ender Chest with a Recovery Compass or Echo Shard (consumable) to recover your Nether stash
+            in the Overworld.""")
+        .define("isolateNetherEnderChest", true);
 
     static final ModConfigSpec.ConfigValue<List<? extends String>> NETHER_STARTER_ITEMS = BUILDER
-            .comment("""
-                    List of items players get when they first enter the Nether.
-                    Format: "itemId,amount"
-                    Example: ["minecraft:ender_pearl,1", "minecraft:wooden_pickaxe"]""")
-            .defineList("netherStarterItems", List.of(), () -> "", o -> o instanceof String);
+        .comment("""
+            List of items players get when they first enter the Nether.
+            Format: "itemId,amount"
+            Example: ["minecraft:ender_pearl,1", "minecraft:wooden_pickaxe"]""")
+        .defineList("netherStarterItems", List.of(), () -> "", o -> o instanceof String);
 
     private static final BooleanValue REFRESH_NETHER_STARTER_ITEMS_ON_DEATH = BUILDER
-            .comment("""
-                    If enabled, players will receive the nether starter items again after having died in the Nether.
-                    Otherwise, they only receive them the first time they enter the Nether.""")
-            .define("refreshNetherStarterItemsOnDeath", false);
+        .comment("""
+            If enabled, players will receive the nether starter items again after having died in the Nether.
+            Otherwise, they only receive them the first time they enter the Nether.""")
+        .define("refreshNetherStarterItemsOnDeath", false);
 
     static final ModConfigSpec.ConfigValue<List<? extends String>> GRACE_EFFECTS = BUILDER
-            .comment("""
-                    List of effects players get when they first enter the Nether.
-                    Format: "effectId,durationSeconds[60],level[1]"
-                    Example: ["fire_resistance,120", "absorption,60,1", "haste,60,2"]""")
-            .defineList("graceEffects", List.of("fire_resistance"), () -> "", o -> o instanceof String);
+        .comment("""
+            List of effects players get when they first enter the Nether.
+            Format: "effectId,durationSeconds[60],level[1]"
+            Example: ["fire_resistance,120", "absorption,60,1", "haste,60,2"]""")
+        .defineList("graceEffects", List.of("fire_resistance"), () -> "", o -> o instanceof String);
 
     private static final BooleanValue EXTRA_LOOT_ENABLED = BUILDER
-            .comment("""
-                    When true, the mod injects extra loot pools with Overworld-related items (e.g. Water Bottles and Glistering Melon Slices)
-                    into Nether structure chest and Piglin bartering loot tables. Setting this to false disables these custom additions.""")
-            .define("extraLootEnabled", true);
+        .comment("""
+            When true, the mod injects extra loot pools with Overworld-related items (e.g. Water Bottles and Glistering Melon Slices)
+            into Nether structure chest and Piglin bartering loot tables. Setting this to false disables these custom additions.""")
+        .define("extraLootEnabled", true);
 
     private static final BooleanValue ANCIENT_CITY_MAP_TRADE_ENABLED = BUILDER
-            .comment("""
-                    When true, Cartographer villagers offer Ancient City Map trades pinned to their Expert (level 4)
-                    tier, giving players a reliable way to locate Ancient Cities. Setting this to false removes those trades.""")
-            .define("ancientCityMapTradeEnabled", true);
+        .comment("""
+            When true, Cartographer villagers offer Ancient City Map trades pinned to their Expert (level 4)
+            tier, giving players a reliable way to locate Ancient Cities. Setting this to false removes those trades.""")
+        .define("ancientCityMapTradeEnabled", true);
 
     public static final ModConfigSpec SPEC = BUILDER.build();
 
@@ -108,35 +115,40 @@ public class FcapServerConfig implements ServerConfig {
     }
 
     @Override
+    public boolean isolateNetherEnderChest() {
+        return ISOLATE_NETHER_ENDER_CHEST.get();
+    }
+
+    @Override
     public List<ItemStack> getNetherStarterItems(Registry<Item> itemRegistry) {
         return NETHER_STARTER_ITEMS.get().stream()
-                .map(itemString -> {
-                    String[] parts = itemString.split(",");
+            .map(itemString -> {
+                String[] parts = itemString.split(",");
 
-                    String itemIdString = parts[0].trim();
-                    Holder.Reference<Item> item = null;
-                    var itemIdentifier = Identifier.tryParse(itemIdString);
-                    if (itemIdentifier != null) {
-                        item = itemRegistry.get(itemIdentifier).orElse(null);
-                    }
-                    if (item == null) {
-                        Constants.LOG.warn("Invalid item in starterNetherInventory: \"{}\"", itemIdString);
-                        return null;
-                    }
+                String itemIdString = parts[0].trim();
+                Holder.Reference<Item> item = null;
+                var itemIdentifier = Identifier.tryParse(itemIdString);
+                if (itemIdentifier != null) {
+                    item = itemRegistry.get(itemIdentifier).orElse(null);
+                }
+                if (item == null) {
+                    Constants.LOG.warn("Invalid item in starterNetherInventory: \"{}\"", itemIdString);
+                    return null;
+                }
 
-                    int amount = 1;
-                    if (parts.length > 1) {
-                        try {
-                            amount = Integer.parseInt(parts[1].trim());
-                        } catch (NumberFormatException _) {
-                            Constants.LOG.warn("Invalid amount for item in starterNetherInventory: \"{}\"", itemString);
-                        }
+                int amount = 1;
+                if (parts.length > 1) {
+                    try {
+                        amount = Integer.parseInt(parts[1].trim());
+                    } catch (NumberFormatException _) {
+                        Constants.LOG.warn("Invalid amount for item in starterNetherInventory: \"{}\"", itemString);
                     }
+                }
 
-                    return new ItemStack(item.value(), amount);
-                })
-                .filter(Objects::nonNull)
-                .toList();
+                return new ItemStack(item.value(), amount);
+            })
+            .filter(Objects::nonNull)
+            .toList();
     }
 
     @Override
@@ -147,37 +159,37 @@ public class FcapServerConfig implements ServerConfig {
     @Override
     public Set<GraceEffect> getGraceEffects() {
         return GRACE_EFFECTS.get().stream()
-                .map(effectString -> {
-                    String[] parts = effectString.split(",");
+            .map(effectString -> {
+                String[] parts = effectString.split(",");
 
-                    Identifier effectId = Identifier.tryParse(parts[0].trim());
-                    if (effectId == null) {
-                        Constants.LOG.warn("Invalid effectId for graceEffects: \"{}\"", effectString);
-                        return null;
+                Identifier effectId = Identifier.tryParse(parts[0].trim());
+                if (effectId == null) {
+                    Constants.LOG.warn("Invalid effectId for graceEffects: \"{}\"", effectString);
+                    return null;
+                }
+
+                double durationSeconds = 60;
+                if (parts.length > 1) {
+                    try {
+                        durationSeconds = Double.parseDouble(parts[1].trim());
+                    } catch (Exception _) {
+                        Constants.LOG.warn("Invalid durationSeconds for graceEffects: \"{}\"", effectString);
                     }
+                }
 
-                    double durationSeconds = 60;
-                    if (parts.length > 1) {
-                        try {
-                            durationSeconds = Double.parseDouble(parts[1].trim());
-                        } catch (Exception _) {
-                            Constants.LOG.warn("Invalid durationSeconds for graceEffects: \"{}\"", effectString);
-                        }
+                int amplifier = 0;
+                if (parts.length > 2) {
+                    try {
+                        amplifier = Integer.parseInt(parts[2].trim()) - 1; // Config is 1-based for user-friendliness, but MobEffectInstance expects 0-based
+                    } catch (NumberFormatException _) {
+                        Constants.LOG.warn("Invalid level for graceEffects: \"{}\"", effectString);
                     }
+                }
 
-                    int amplifier = 0;
-                    if (parts.length > 2) {
-                        try {
-                            amplifier = Integer.parseInt(parts[2].trim()) - 1; // Config is 1-based for user-friendliness, but MobEffectInstance expects 0-based
-                        } catch (NumberFormatException _) {
-                            Constants.LOG.warn("Invalid level for graceEffects: \"{}\"", effectString);
-                        }
-                    }
-
-                    return new GraceEffect(effectId, (int) (durationSeconds * 20), amplifier);
-                })
-                .filter(Objects::nonNull)
-                .collect(java.util.stream.Collectors.toSet());
+                return new GraceEffect(effectId, (int) (durationSeconds * 20), amplifier);
+            })
+            .filter(Objects::nonNull)
+            .collect(java.util.stream.Collectors.toSet());
     }
 
     @Override

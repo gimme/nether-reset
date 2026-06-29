@@ -15,6 +15,7 @@ public interface ServerConfig {
     boolean allowEntitiesTeleportToNether();
     boolean allowEntitiesTeleportFromNether();
     boolean clearEntityItemsOnTeleport();
+    boolean isolateNetherEnderChest();
 
     List<ItemStack> getNetherStarterItems(Registry<Item> itemRegistry);
     boolean refreshNetherStarterItemsOnDeath();

@@ -22,6 +22,8 @@ public final class ConfigTestSupport {
 
     public static final BooleanValue CLEAR_ENTITY_ITEMS_ON_TELEPORT = FcapServerConfig.CLEAR_ENTITY_ITEMS_ON_TELEPORT;
 
+    public static final BooleanValue ISOLATE_NETHER_ENDER_CHEST = FcapServerConfig.ISOLATE_NETHER_ENDER_CHEST;
+
     private ConfigTestSupport() {
     }
 

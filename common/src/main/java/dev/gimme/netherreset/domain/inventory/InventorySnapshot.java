@@ -3,6 +3,7 @@ package dev.gimme.netherreset.domain.inventory;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -25,29 +26,35 @@ public record InventorySnapshot(
     }
 
     public static InventorySnapshot fromPlayer(ServerPlayer player) {
-        var inv = player.getInventory();
+        return fromContainer(player.getInventory());
+    }
 
-        var out = new ArrayList<ItemStack>(inv.getContainerSize());
-        for (int i = 0; i < inv.getContainerSize(); i++) {
-            out.add(inv.getItem(i).copy());
+    /** Captures a copy of every slot in the given container. */
+    public static InventorySnapshot fromContainer(Container container) {
+        var out = new ArrayList<ItemStack>(container.getContainerSize());
+        for (int i = 0; i < container.getContainerSize(); i++) {
+            out.add(container.getItem(i).copy());
         }
         return new InventorySnapshot(List.copyOf(out));
     }
 
     public void applyTo(ServerPlayer player) {
-        var inv = player.getInventory();
-
-        // Clear first to avoid leftover items if sizes differ
-        for (int i = 0; i < inv.getContainerSize(); i++) {
-            inv.setItem(i, ItemStack.EMPTY);
-        }
-
-        int n = Math.min(items.size(), inv.getContainerSize());
-        for (int i = 0; i < n; i++) {
-            inv.setItem(i, items.get(i));
-        }
-
-        inv.setChanged();
+        applyToContainer(player.getInventory());
         player.inventoryMenu.broadcastChanges();
+    }
+
+    /** Overwrites the given container with this snapshot, clearing any slots the snapshot doesn't fill. */
+    public void applyToContainer(Container container) {
+        // Clear first to avoid leftover items if sizes differ
+        for (int i = 0; i < container.getContainerSize(); i++) {
+            container.setItem(i, ItemStack.EMPTY);
+        }
+
+        int n = Math.min(items.size(), container.getContainerSize());
+        for (int i = 0; i < n; i++) {
+            container.setItem(i, items.get(i));
+        }
+
+        container.setChanged();
     }
 }

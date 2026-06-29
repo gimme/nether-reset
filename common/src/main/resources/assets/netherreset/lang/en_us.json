@@ -1,3 +1,5 @@
 {
-  "filled_map.ancient_city": "Ancient City Map"
+  "filled_map.ancient_city": "Ancient City Map",
+  "netherreset.ender_chest.hint": "Use a Recovery Compass or Echo Shard to recover items from the Nether.",
+  "netherreset.ender_chest.empty": "Nothing to recover"
 }

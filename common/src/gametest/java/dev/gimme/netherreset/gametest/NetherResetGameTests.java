@@ -17,6 +17,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -89,6 +91,148 @@ public final class NetherResetGameTests {
         helper.assertTrue(ItemStack.matches(player.getInventory().getItem(0), new ItemStack(Items.NETHERITE_SCRAP, 2)),
                 "the Nether inventory should still hold what was gathered there");
         helper.succeed();
+    }
+
+    /**
+     * The Nether gets its own Ender Chest: Overworld contents are hidden on the way in (blocking imports), the
+     * Nether stash persists across trips, and nothing is auto-merged back — extraction is left to the ritual.
+     */
+    public static void netherEnderChestIsolatesFromOverworld(GameTestHelper helper) {
+        ServerPlayer player = placeMockPlayer(helper, GameType.SURVIVAL);
+        Container enderChest = player.getEnderChestInventory();
+        enderChest.setItem(0, new ItemStack(Items.DIAMOND, 5)); // stored in the Overworld
+
+        Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, Level.OVERWORLD, Level.NETHER);
+        helper.assertTrue(enderChest.getItem(0).isEmpty(),
+                "the Overworld Ender Chest contents must not be reachable in the Nether");
+
+        enderChest.setItem(0, new ItemStack(Items.NETHERITE_SCRAP, 2)); // stashed in the Nether
+
+        Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, Level.NETHER, Level.OVERWORLD);
+        helper.assertTrue(ItemStack.matches(enderChest.getItem(0), new ItemStack(Items.DIAMOND, 5)),
+                "the Overworld Ender Chest should come back untouched, with no Nether loot auto-merged in");
+
+        Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, Level.OVERWORLD, Level.NETHER);
+        helper.assertTrue(ItemStack.matches(enderChest.getItem(0), new ItemStack(Items.NETHERITE_SCRAP, 2)),
+                "the Nether Ender Chest should still hold what was stashed there last trip");
+        helper.succeed();
+    }
+
+    /**
+     * The recovery ritual: right-clicking with a Recovery Compass spits the whole Nether stash out of the chest
+     * as drops, leaves the Overworld contents alone, empties the stash, and does not consume the (reusable) compass.
+     */
+    public static void recoveryCompassSpitsOutNetherStash(GameTestHelper helper) {
+        ServerPlayer player = placeMockPlayer(helper, GameType.SURVIVAL);
+        Container enderChest = player.getEnderChestInventory();
+        enderChest.setItem(0, new ItemStack(Items.DIAMOND, 5)); // Overworld storage that must survive
+
+        stashInNether(player, new ItemStack(Items.NETHERITE_SCRAP, 2));
+        helper.assertTrue(ItemStack.matches(enderChest.getItem(0), new ItemStack(Items.DIAMOND, 5)),
+                "the Overworld Ender Chest should be back, untouched, after the Nether trip");
+
+        ItemStack compass = new ItemStack(Items.RECOVERY_COMPASS);
+        boolean handled = Main.INSTANCE.getPlayerHandler().onUseEnderChest(player, compass, player.blockPosition());
+        helper.assertTrue(handled, "using the Recovery Compass on the chest should be taken as a recovery");
+        helper.assertTrue(compass.getCount() == 1 && compass.is(Items.RECOVERY_COMPASS),
+                "the Recovery Compass is reusable and must not be consumed");
+        helper.assertTrue(ItemStack.matches(enderChest.getItem(0), new ItemStack(Items.DIAMOND, 5)),
+                "recovery should leave the Overworld Ender Chest contents alone");
+
+        // The spit-out drops only enter the level's entity lookup next tick, so check them (and the now-empty
+        // stash) then: a second recovery finds nothing, and re-entering the Nether shows an empty chest.
+        helper.runAtTickTime(1, () -> {
+            helper.assertTrue(itemEntityNear(player, Items.NETHERITE_SCRAP),
+                    "the recovered Nether items should spit out of the chest into the world");
+            helper.assertTrue(
+                    Main.INSTANCE.getPlayerHandler().onUseEnderChest(player, compass, player.blockPosition()),
+                    "a key click is always taken as a recovery attempt, so it consumes the interaction even with "
+                            + "an empty stash rather than opening the chest");
+            Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, Level.OVERWORLD, Level.NETHER);
+            helper.assertTrue(enderChest.getItem(0).isEmpty(),
+                    "the Nether Ender Chest should be empty again after its stash was recovered");
+            helper.succeed();
+        });
+    }
+
+    /** Recovering with an Echo Shard works too, but consumes exactly one shard from the stack. */
+    public static void echoShardRecoveryConsumesTheShard(GameTestHelper helper) {
+        ServerPlayer player = placeMockPlayer(helper, GameType.SURVIVAL);
+        stashInNether(player, new ItemStack(Items.GHAST_TEAR, 4));
+
+        ItemStack shards = new ItemStack(Items.ECHO_SHARD, 3);
+        boolean handled = Main.INSTANCE.getPlayerHandler().onUseEnderChest(player, shards, player.blockPosition());
+        helper.assertTrue(handled, "using an Echo Shard on the chest should recover the Nether stash");
+        helper.assertTrue(shards.getCount() == 2, "recovery by Echo Shard should consume exactly one shard");
+
+        helper.runAtTickTime(1, () -> { // the drops are only queryable next tick
+            helper.assertTrue(itemEntityNear(player, Items.GHAST_TEAR),
+                    "the recovered Nether items should spit out of the chest into the world");
+            helper.succeed();
+        });
+    }
+
+    /**
+     * A player who dies in the Nether and respawns in the Overworld never fires a dimension-change event, so the
+     * Ender Chest swap-back happens on respawn instead: the Overworld chest returns and the Nether loot is kept
+     * in the recoverable stash rather than lost.
+     */
+    public static void netherEnderRestoredOnRespawnOutOfNether(GameTestHelper helper) {
+        ServerPlayer player = placeMockPlayer(helper, GameType.SURVIVAL);
+        Container enderChest = player.getEnderChestInventory();
+        enderChest.setItem(0, new ItemStack(Items.DIAMOND, 5));
+
+        Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, Level.OVERWORLD, Level.NETHER);
+        enderChest.setItem(0, new ItemStack(Items.NETHERITE_SCRAP, 2)); // gathered before dying
+
+        // The mock player stays in the (Overworld) test level, so this stands in for respawning out of the Nether.
+        Main.INSTANCE.getPlayerHandler().onPlayerRespawn(player, false);
+        helper.assertTrue(ItemStack.matches(enderChest.getItem(0), new ItemStack(Items.DIAMOND, 5)),
+                "respawning out of the Nether should restore the Overworld Ender Chest");
+
+        ItemStack compass = new ItemStack(Items.RECOVERY_COMPASS);
+        helper.assertTrue(
+                Main.INSTANCE.getPlayerHandler().onUseEnderChest(player, compass, player.blockPosition()),
+                "the Nether stash gathered before death should still be recoverable");
+        helper.runAtTickTime(1, () -> { // the drops are only queryable next tick
+            helper.assertTrue(itemEntityNear(player, Items.NETHERITE_SCRAP),
+                    "recovering after a Nether death should spit the loot out");
+            helper.succeed();
+        });
+    }
+
+    /**
+     * With {@code isolateNetherEnderChest} off, the Ender Chest is vanilla: Overworld contents stay reachable in
+     * the Nether, and the recovery ritual is inert.
+     */
+    public static void enderChestStaysSharedWhenIsolationDisabled(GameTestHelper helper) {
+        ServerPlayer player = placeMockPlayer(helper, GameType.SURVIVAL);
+        Container enderChest = player.getEnderChestInventory();
+        enderChest.setItem(0, new ItemStack(Items.DIAMOND, 5));
+
+        try (var _ = ConfigTestSupport.override(ConfigTestSupport.ISOLATE_NETHER_ENDER_CHEST, false)) {
+            Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, Level.OVERWORLD, Level.NETHER);
+            helper.assertTrue(ItemStack.matches(enderChest.getItem(0), new ItemStack(Items.DIAMOND, 5)),
+                    "with isolation disabled, the Overworld Ender Chest should stay reachable in the Nether");
+            helper.assertFalse(
+                    Main.INSTANCE.getPlayerHandler().onUseEnderChest(
+                            player, new ItemStack(Items.RECOVERY_COMPASS), player.blockPosition()),
+                    "with the feature disabled, the recovery ritual should do nothing");
+        }
+        helper.succeed();
+    }
+
+    /** Runs a Nether round trip that leaves {@code loot} in the player's recoverable Nether stash. */
+    private static void stashInNether(ServerPlayer player, ItemStack loot) {
+        Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, Level.OVERWORLD, Level.NETHER);
+        player.getEnderChestInventory().setItem(0, loot);
+        Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, Level.NETHER, Level.OVERWORLD);
+    }
+
+    /** Whether an item entity holding the given item has been spit out near the player. */
+    private static boolean itemEntityNear(ServerPlayer player, Item item) {
+        return player.level().getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().inflate(8.0))
+                .stream().anyMatch(entity -> entity.getItem().is(item));
     }
 
     /**

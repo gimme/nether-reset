@@ -3,6 +3,7 @@ package dev.gimme.netherreset;
 import dev.gimme.netherreset.application.EntityHandler;
 import dev.gimme.netherreset.application.PlayerAttachmentAccessor;
 import dev.gimme.netherreset.application.PlayerHandler;
+import dev.gimme.netherreset.domain.inventory.EnderChestManager;
 import dev.gimme.netherreset.domain.inventory.InventoryManager;
 import dev.gimme.netherreset.domain.config.ServerConfig;
 import dev.gimme.netherreset.infrastructure.FcapServerConfig;
@@ -22,7 +23,9 @@ public class Main {
 
     private Main(PlayerAttachmentAccessor playerAttachmentAccessor) {
         this.serverConfig = new FcapServerConfig();
-        this.playerHandler = new PlayerHandler(new InventoryManager(playerAttachmentAccessor, serverConfig));
+        this.playerHandler = new PlayerHandler(
+                new InventoryManager(playerAttachmentAccessor, serverConfig),
+                new EnderChestManager(playerAttachmentAccessor, serverConfig));
         this.entityHandler = new EntityHandler(serverConfig);
     }
 

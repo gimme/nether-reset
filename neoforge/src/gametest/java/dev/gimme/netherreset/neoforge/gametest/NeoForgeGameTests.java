@@ -36,6 +36,11 @@ public final class NeoForgeGameTests {
     private static final List<Test> TESTS = List.of(
             new Test("first_nether_entry_swaps_inventory_and_applies_grace", 20, NetherResetGameTests::firstNetherEntrySwapsInventoryAndAppliesGrace),
             new Test("dimension_inventories_stay_isolated_across_crossings", 20, NetherResetGameTests::dimensionInventoriesStayIsolatedAcrossCrossings),
+            new Test("nether_ender_chest_isolates_from_overworld", 20, NetherResetGameTests::netherEnderChestIsolatesFromOverworld),
+            new Test("recovery_compass_spits_out_nether_stash", 20, NetherResetGameTests::recoveryCompassSpitsOutNetherStash),
+            new Test("echo_shard_recovery_consumes_the_shard", 20, NetherResetGameTests::echoShardRecoveryConsumesTheShard),
+            new Test("nether_ender_restored_on_respawn_out_of_nether", 20, NetherResetGameTests::netherEnderRestoredOnRespawnOutOfNether),
+            new Test("ender_chest_stays_shared_when_isolation_disabled", 20, NetherResetGameTests::enderChestStaysSharedWhenIsolationDisabled),
             new Test("allowed_entity_crossing_strips_carried_items", 20, NetherResetGameTests::allowedEntityCrossingStripsCarriedItems),
             new Test("allowed_entity_keeps_items_when_clearing_disabled", 20, NetherResetGameTests::allowedEntityKeepsItemsWhenClearingDisabled));
 
