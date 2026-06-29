@@ -1,6 +1,7 @@
 package dev.gimme.netherreset.domain.inventory;
 
 import dev.gimme.netherreset.application.PlayerAttachmentAccessor;
+import dev.gimme.netherreset.application.ServerScheduler;
 import dev.gimme.netherreset.domain.config.ServerConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -17,6 +18,7 @@ import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.structure.Structure;
 
 /**
@@ -47,6 +49,9 @@ public class EnderChestManager {
     private static final ResourceKey<Structure> ANCIENT_CITY =
             ResourceKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath("minecraft", "ancient_city"));
 
+    /** Ticks the lid is held open during a recovery before closing (~0.5s; the swing itself adds ~10 each way). */
+    private static final int LID_OPEN_TICKS = 10;
+
     private static final Component HINT_MESSAGE = Component.translatableWithFallback(
             "netherreset.ender_chest.hint",
             "Use a Recovery Compass or Echo Shard to recover items from the Nether.").withStyle(ChatFormatting.YELLOW);
@@ -57,10 +62,13 @@ public class EnderChestManager {
 
     private final PlayerAttachmentAccessor playerAttachmentAccessor;
     private final ServerConfig serverConfig;
+    private final ServerScheduler scheduler;
 
-    public EnderChestManager(PlayerAttachmentAccessor playerAttachmentAccessor, ServerConfig serverConfig) {
+    public EnderChestManager(PlayerAttachmentAccessor playerAttachmentAccessor, ServerConfig serverConfig,
+                             ServerScheduler scheduler) {
         this.playerAttachmentAccessor = playerAttachmentAccessor;
         this.serverConfig = serverConfig;
+        this.scheduler = scheduler;
     }
 
     /**
@@ -180,11 +188,26 @@ public class EnderChestManager {
         // clamp; staying just above it keeps the sound low but slightly varied.
         float openPitch = 0.5F + level.getRandom().nextFloat() * 0.1F;
         level.playSound(null, chestPos, SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1.0F, openPitch);
+        animateLid(level, chestPos); // bob the lid open and shut around the spill
         return true;
     }
 
     private static void playLockSound(Level level, BlockPos pos) {
         level.playSound(null, pos, SoundEvents.LODESTONE_COMPASS_LOCK, SoundSource.BLOCKS, 1.0F, 0.5F);
+    }
+
+    /**
+     * Bobs the lid open and shut around the spill via the chest's lid block event (id 1), without opening a
+     * menu. We bypass the opener counter — it would play vanilla's normal-pitched sounds over the ritual's low
+     * cues — which also means nothing auto-closes the lid, so we schedule the close ourselves.
+     */
+    private void animateLid(Level level, BlockPos chestPos) {
+        level.blockEvent(chestPos, Blocks.ENDER_CHEST, 1, 1); // open
+        scheduler.schedule(LID_OPEN_TICKS, () -> {
+            level.blockEvent(chestPos, Blocks.ENDER_CHEST, 1, 0); // shut
+            level.playSound(null, chestPos, SoundEvents.ENDER_CHEST_CLOSE, SoundSource.BLOCKS, 1.0F,
+                    0.5F + level.getRandom().nextFloat() * 0.1F);
+        });
     }
 
     private static boolean isInAncientCity(Level level, BlockPos pos) {

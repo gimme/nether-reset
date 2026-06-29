@@ -19,6 +19,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 @Mod(Constants.MOD_ID)
 public class NeoForgeMod {
@@ -62,5 +63,11 @@ public class NeoForgeMod {
     public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         Main.INSTANCE.getPlayerHandler().onPlayerRespawn(player, event.isEndConquered());
+    }
+
+    // Pump the deferred-task scheduler once per server tick.
+    @SubscribeEvent
+    public void onServerTick(ServerTickEvent.Post event) {
+        Main.INSTANCE.getScheduler().tick();
     }
 }

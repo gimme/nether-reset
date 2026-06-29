@@ -7,6 +7,7 @@ import dev.gimme.netherreset.infrastructure.FcapServerConfig;
 import fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityLevelChangeEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.minecraft.core.BlockPos;
@@ -28,6 +29,9 @@ public class FabricMod implements ModInitializer {
         ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL.register((player, origin, destination) -> {
             Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, origin.dimension(), destination.dimension());
         });
+
+        // Pump the deferred-task scheduler once per server tick.
+        ServerTickEvents.END_SERVER_TICK.register(server -> Main.INSTANCE.getScheduler().tick());
 
         // Recovery ritual: right-clicking an Ender Chest with the key item spits out the player's Nether stash.
         UseBlockCallback.EVENT.register((player, level, hand, hitResult) -> {
