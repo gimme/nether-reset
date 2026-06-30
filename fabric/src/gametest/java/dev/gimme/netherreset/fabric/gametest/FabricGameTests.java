@@ -46,6 +46,31 @@ public final class FabricGameTests {
     }
 
     @GameTest
+    public void netherDeathRespawnsAtEntryPortal(GameTestHelper helper) {
+        NetherResetGameTests.netherDeathRespawnsAtEntryPortal(helper);
+    }
+
+    @GameTest
+    public void netherDeathRespawnUnchangedWhenDisabled(GameTestHelper helper) {
+        NetherResetGameTests.netherDeathRespawnUnchangedWhenDisabled(helper);
+    }
+
+    @GameTest
+    public void deathOutsideNetherKeepsVanillaRespawn(GameTestHelper helper) {
+        NetherResetGameTests.deathOutsideNetherKeepsVanillaRespawn(helper);
+    }
+
+    @GameTest
+    public void netherDeathWithoutEntryKeepsVanillaRespawn(GameTestHelper helper) {
+        NetherResetGameTests.netherDeathWithoutEntryKeepsVanillaRespawn(helper);
+    }
+
+    @GameTest
+    public void netherRespawnAnchorWinsOverEntryPortal(GameTestHelper helper) {
+        NetherResetGameTests.netherRespawnAnchorWinsOverEntryPortal(helper);
+    }
+
+    @GameTest
     public void enderChestStaysSharedWhenIsolationDisabled(GameTestHelper helper) {
         NetherResetGameTests.enderChestStaysSharedWhenIsolationDisabled(helper);
     }

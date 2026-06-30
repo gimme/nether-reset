@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.Container;
@@ -23,6 +24,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
@@ -253,6 +256,97 @@ public final class NetherResetGameTests {
                     "with the feature disabled, the recovery ritual should do nothing");
         }
         helper.succeed();
+    }
+
+    /**
+     * Dying in the Nether redirects the respawn back into the Nether, at the spot the player last entered it, rather
+     * than to the Overworld spawn vanilla computed. The mock player never actually dies, so this drives the redirect
+     * decision directly: enter the Nether (recording the entry point), then resolve an Overworld respawn as if the
+     * player had died in the Nether.
+     */
+    public static void netherDeathRespawnsAtEntryPortal(GameTestHelper helper) {
+        ServerPlayer player = placeMockPlayer(helper, GameType.SURVIVAL);
+        Vec3 entryPos = player.position();
+
+        // Crossing into the Nether records the entry point through the real production hook.
+        Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, Level.OVERWORLD, Level.NETHER);
+
+        ServerLevel nether = helper.getLevel().getServer().getLevel(Level.NETHER);
+        helper.assertTrue(nether != null, "the test server should have a Nether dimension");
+
+        TeleportTransition overworldRespawn = transitionInto(helper.getLevel(), new Vec3(0.5, 64, 0.5));
+        TeleportTransition resolved =
+                Main.INSTANCE.getPlayerHandler().resolveRespawn(player, Level.NETHER, overworldRespawn);
+
+        helper.assertTrue(resolved.newLevel() == nether,
+                "dying in the Nether should redirect the respawn into the Nether");
+        helper.assertTrue(resolved.position().distanceToSqr(entryPos) < 1.0e-6,
+                "the respawn should land at the recorded Nether entry point");
+        helper.succeed();
+    }
+
+    /** With {@code respawnInNether} off, a Nether death keeps the vanilla (Overworld) respawn untouched. */
+    public static void netherDeathRespawnUnchangedWhenDisabled(GameTestHelper helper) {
+        ServerPlayer player = placeMockPlayer(helper, GameType.SURVIVAL);
+        Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, Level.OVERWORLD, Level.NETHER);
+
+        TeleportTransition overworldRespawn = transitionInto(helper.getLevel(), new Vec3(0.5, 64, 0.5));
+        try (var _ = ConfigTestSupport.override(ConfigTestSupport.RESPAWN_IN_NETHER, false)) {
+            TeleportTransition resolved =
+                    Main.INSTANCE.getPlayerHandler().resolveRespawn(player, Level.NETHER, overworldRespawn);
+            helper.assertTrue(resolved == overworldRespawn,
+                    "with the feature off, the vanilla respawn transition should be returned unchanged");
+        }
+        helper.succeed();
+    }
+
+    /** Dying anywhere other than the Nether is left to vanilla, even with a Nether entry on record. */
+    public static void deathOutsideNetherKeepsVanillaRespawn(GameTestHelper helper) {
+        ServerPlayer player = placeMockPlayer(helper, GameType.SURVIVAL);
+        Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, Level.OVERWORLD, Level.NETHER);
+
+        TeleportTransition overworldRespawn = transitionInto(helper.getLevel(), new Vec3(0.5, 64, 0.5));
+        TeleportTransition resolved =
+                Main.INSTANCE.getPlayerHandler().resolveRespawn(player, Level.OVERWORLD, overworldRespawn);
+        helper.assertTrue(resolved == overworldRespawn,
+                "a death outside the Nether should keep the vanilla respawn");
+        helper.succeed();
+    }
+
+    /** Without a recorded Nether entry (e.g. the player has never been to the Nether), the redirect bows out. */
+    public static void netherDeathWithoutEntryKeepsVanillaRespawn(GameTestHelper helper) {
+        ServerPlayer player = placeMockPlayer(helper, GameType.SURVIVAL);
+
+        TeleportTransition overworldRespawn = transitionInto(helper.getLevel(), new Vec3(0.5, 64, 0.5));
+        TeleportTransition resolved =
+                Main.INSTANCE.getPlayerHandler().resolveRespawn(player, Level.NETHER, overworldRespawn);
+        helper.assertTrue(resolved == overworldRespawn,
+                "with no recorded entry, the respawn should fall back to vanilla");
+        helper.succeed();
+    }
+
+    /**
+     * A charged Nether respawn anchor still wins: when vanilla already resolves the respawn to the Nether, the
+     * redirect leaves it alone instead of dragging the player back to their entry portal.
+     */
+    public static void netherRespawnAnchorWinsOverEntryPortal(GameTestHelper helper) {
+        ServerPlayer player = placeMockPlayer(helper, GameType.SURVIVAL);
+        Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, Level.OVERWORLD, Level.NETHER);
+
+        ServerLevel nether = helper.getLevel().getServer().getLevel(Level.NETHER);
+        helper.assertTrue(nether != null, "the test server should have a Nether dimension");
+
+        TeleportTransition anchorRespawn = transitionInto(nether, new Vec3(8.5, 70, 8.5));
+        TeleportTransition resolved =
+                Main.INSTANCE.getPlayerHandler().resolveRespawn(player, Level.NETHER, anchorRespawn);
+        helper.assertTrue(resolved == anchorRespawn,
+                "an existing Nether respawn (e.g. a respawn anchor) should be left untouched");
+        helper.succeed();
+    }
+
+    /** A plain respawn transition into the given level, standing at {@code pos} and facing north. */
+    private static TeleportTransition transitionInto(ServerLevel level, Vec3 pos) {
+        return new TeleportTransition(level, pos, Vec3.ZERO, 0f, 0f, TeleportTransition.DO_NOTHING);
     }
 
     /** Runs a Nether round trip that leaves {@code loot} in the player's recoverable Nether stash. */

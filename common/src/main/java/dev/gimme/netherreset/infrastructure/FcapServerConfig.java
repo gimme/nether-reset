@@ -55,6 +55,13 @@ public class FcapServerConfig implements ServerConfig {
             in the Overworld.""")
         .define("isolateNetherEnderChest", true);
 
+    static final BooleanValue RESPAWN_IN_NETHER = BUILDER
+        .comment("""
+            If a player who dies in the Nether should respawn back in the Nether, at the spot where they last entered
+            it, instead of being sent to their Overworld spawn. Keeps the Nether a committed, one-way challenge. A
+            charged respawn anchor in the Nether still takes priority, exactly like in vanilla.""")
+        .define("respawnInNether", true);
+
     static final ModConfigSpec.ConfigValue<List<? extends String>> NETHER_STARTER_ITEMS = BUILDER
         .comment("""
             List of items players get when they first enter the Nether.
@@ -124,6 +131,11 @@ public class FcapServerConfig implements ServerConfig {
     @Override
     public boolean isolateNetherEnderChest() {
         return ISOLATE_NETHER_ENDER_CHEST.get();
+    }
+
+    @Override
+    public boolean respawnInNether() {
+        return RESPAWN_IN_NETHER.get();
     }
 
     @Override

@@ -24,6 +24,8 @@ public final class ConfigTestSupport {
 
     public static final BooleanValue ISOLATE_NETHER_ENDER_CHEST = FcapServerConfig.ISOLATE_NETHER_ENDER_CHEST;
 
+    public static final BooleanValue RESPAWN_IN_NETHER = FcapServerConfig.RESPAWN_IN_NETHER;
+
     private ConfigTestSupport() {
     }
 

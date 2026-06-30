@@ -6,6 +6,7 @@ import dev.gimme.netherreset.application.PlayerHandler;
 import dev.gimme.netherreset.application.ServerScheduler;
 import dev.gimme.netherreset.domain.inventory.EnderChestManager;
 import dev.gimme.netherreset.domain.inventory.InventoryManager;
+import dev.gimme.netherreset.domain.inventory.NetherRespawnManager;
 import dev.gimme.netherreset.domain.config.ServerConfig;
 import dev.gimme.netherreset.infrastructure.FcapServerConfig;
 
@@ -28,7 +29,8 @@ public class Main {
         this.scheduler = new ServerScheduler();
         this.playerHandler = new PlayerHandler(
                 new InventoryManager(playerAttachmentAccessor, serverConfig),
-                new EnderChestManager(playerAttachmentAccessor, serverConfig, scheduler));
+                new EnderChestManager(playerAttachmentAccessor, serverConfig, scheduler),
+                new NetherRespawnManager(playerAttachmentAccessor, serverConfig));
         this.entityHandler = new EntityHandler(serverConfig);
     }
 
