@@ -51,6 +51,11 @@ public final class FabricGameTests {
     }
 
     @GameTest
+    public void netherDeathWithBrokenPortalKeepsVanillaRespawn(GameTestHelper helper) {
+        NetherResetGameTests.netherDeathWithBrokenPortalKeepsVanillaRespawn(helper);
+    }
+
+    @GameTest
     public void netherDeathRespawnUnchangedWhenDisabled(GameTestHelper helper) {
         NetherResetGameTests.netherDeathRespawnUnchangedWhenDisabled(helper);
     }

@@ -45,6 +45,7 @@ public final class NeoForgeGameTests {
             new Test("allowed_entity_crossing_strips_carried_items", 20, NetherResetGameTests::allowedEntityCrossingStripsCarriedItems),
             new Test("allowed_entity_keeps_items_when_clearing_disabled", 20, NetherResetGameTests::allowedEntityKeepsItemsWhenClearingDisabled),
             new Test("nether_death_respawns_at_entry_portal", 20, NetherResetGameTests::netherDeathRespawnsAtEntryPortal),
+            new Test("nether_death_with_broken_portal_keeps_vanilla_respawn", 20, NetherResetGameTests::netherDeathWithBrokenPortalKeepsVanillaRespawn),
             new Test("nether_death_respawn_unchanged_when_disabled", 20, NetherResetGameTests::netherDeathRespawnUnchangedWhenDisabled),
             new Test("death_outside_nether_keeps_vanilla_respawn", 20, NetherResetGameTests::deathOutsideNetherKeepsVanillaRespawn),
             new Test("nether_death_without_entry_keeps_vanilla_respawn", 20, NetherResetGameTests::netherDeathWithoutEntryKeepsVanillaRespawn),

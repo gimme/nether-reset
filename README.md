@@ -28,7 +28,7 @@ Some loot tables are supplemented with extra brewing ingredients that would othe
 - Cartographer offers Ancient City Map when reaching Expert level
 - Apprentice Cartographers that lack the Glass Pane → Emerald trade get an Amethyst Shard → Emerald trade instead, so they can always be leveled up affordably
 - Dying in one dimension does not affect the inventory of the other dimension
-- Dying in the Nether respawns you back in the Nether, at the spot where you entered it, instead of sending you to the Overworld (configurable, on by default; a charged respawn anchor still takes priority)
+- Dying in the Nether respawns you back in the Nether, at the spot where you entered it, instead of sending you to the Overworld — as long as that portal is still standing; if it's been broken you respawn in the Overworld as usual (configurable, on by default; a charged respawn anchor still takes priority)
 - Dropped items (and other entities) cannot enter portals
 - Entities allowed through portals (when configured) are stripped of any items they carry, so they can't smuggle loot
 - When you first enter the Nether, you get a grace period of 60 seconds with fire resistance

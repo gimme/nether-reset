@@ -24,6 +24,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 
@@ -266,6 +268,10 @@ public final class NetherResetGameTests {
      */
     public static void netherDeathRespawnsAtEntryPortal(GameTestHelper helper) {
         ServerPlayer player = placeMockPlayer(helper, GameType.SURVIVAL);
+        // The recorded entry is reused as a Nether position, and the portal-still-standing check reads Nether blocks
+        // there. The test region sits below y=0 (valid in the Overworld) but the Nether floor is at y=0, so lift the
+        // player to a height that's in-bounds in both before the crossing records it.
+        player.snapTo(player.getX(), 64, player.getZ());
         Vec3 entryPos = player.position();
 
         // Crossing into the Nether records the entry point through the real production hook.
@@ -273,6 +279,9 @@ public final class NetherResetGameTests {
 
         ServerLevel nether = helper.getLevel().getServer().getLevel(Level.NETHER);
         helper.assertTrue(nether != null, "the test server should have a Nether dimension");
+
+        // The redirect only fires while the entry portal still stands, so stand one up at the recorded spot.
+        nether.setBlock(BlockPos.containing(entryPos), Blocks.NETHER_PORTAL.defaultBlockState(), Block.UPDATE_CLIENTS);
 
         TeleportTransition overworldRespawn = transitionInto(helper.getLevel(), new Vec3(0.5, 64, 0.5));
         TeleportTransition resolved =
@@ -282,6 +291,31 @@ public final class NetherResetGameTests {
                 "dying in the Nether should redirect the respawn into the Nether");
         helper.assertTrue(resolved.position().distanceToSqr(entryPos) < 1.0e-6,
                 "the respawn should land at the recorded Nether entry point");
+        helper.succeed();
+    }
+
+    /**
+     * The redirect only holds while the entry portal still stands. With nothing but open Nether at the recorded spot
+     * (the portal was broken since the crossing), redirecting there would strand the player, so the respawn falls
+     * back to the vanilla Overworld one instead.
+     */
+    public static void netherDeathWithBrokenPortalKeepsVanillaRespawn(GameTestHelper helper) {
+        ServerPlayer player = placeMockPlayer(helper, GameType.SURVIVAL);
+        player.snapTo(player.getX(), 64, player.getZ()); // a height that's in-bounds in the Nether too (see above)
+        Vec3 entryPos = player.position();
+        Main.INSTANCE.getPlayerHandler().onPlayerChangeWorld(player, Level.OVERWORLD, Level.NETHER);
+
+        ServerLevel nether = helper.getLevel().getServer().getLevel(Level.NETHER);
+        helper.assertTrue(nether != null, "the test server should have a Nether dimension");
+
+        // Make sure the entry spot is clear — no portal block to find, standing in for one that's been destroyed.
+        nether.setBlock(BlockPos.containing(entryPos), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+
+        TeleportTransition overworldRespawn = transitionInto(helper.getLevel(), new Vec3(0.5, 64, 0.5));
+        TeleportTransition resolved =
+                Main.INSTANCE.getPlayerHandler().resolveRespawn(player, Level.NETHER, overworldRespawn);
+        helper.assertTrue(resolved == overworldRespawn,
+                "with the entry portal gone, the respawn should fall back to vanilla");
         helper.succeed();
     }
 

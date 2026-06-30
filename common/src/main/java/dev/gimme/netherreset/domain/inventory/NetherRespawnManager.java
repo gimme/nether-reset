@@ -2,11 +2,13 @@ package dev.gimme.netherreset.domain.inventory;
 
 import dev.gimme.netherreset.application.PlayerAttachmentAccessor;
 import dev.gimme.netherreset.domain.config.ServerConfig;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 
@@ -21,6 +23,10 @@ import java.util.Optional;
  * charged respawn anchor in the Nether still wins — vanilla already keeps such players in the Nether, so the
  * redirect bows out whenever the computed respawn is already a Nether one. With no recorded entry (or no Nether at
  * all), it falls back to vanilla and the player respawns in the Overworld as before.
+ *
+ * <p>The recorded portal only counts while it is still standing: if the portal the player came through has since been
+ * broken (a ghast fireball, the obsidian mined out), respawning at that spot would drop them into open Nether with no
+ * way home, so the redirect bows out and they respawn in the Overworld instead.
  *
  * <p>Once the player is dropped back into the Nether, the existing respawn handling does the rest: the per-dimension
  * inventory swap applies the (death-reset) Nether inventory, and the Ender Chest stays isolated because the player
@@ -66,6 +72,19 @@ public class NetherRespawnManager {
         if (nether == null) return original;                                    // no Nether loaded — fall back to vanilla
 
         NetherRespawnPoint point = entry.get();
+        if (!portalStillStands(nether, point.pos())) return original;           // entry portal gone — fall back to vanilla
+
         return new TeleportTransition(nether, point.pos(), Vec3.ZERO, point.yRot(), 0f, original.postTeleportTransition());
+    }
+
+    /**
+     * Whether the entry portal still stands at the recorded spot. The player materialises standing inside the portal
+     * when they cross in, so the recorded position is itself a portal block while the portal is intact — and a Nether
+     * portal is all-or-nothing (breaking any part of the frame collapses the whole sheet in one cascade), so that one
+     * block's state reflects the entire portal. Reading it loads the chunk if needed, which is fine on the server
+     * thread the respawn already runs on.
+     */
+    private boolean portalStillStands(ServerLevel nether, Vec3 pos) {
+        return nether.getBlockState(BlockPos.containing(pos)).is(Blocks.NETHER_PORTAL);
     }
 }
