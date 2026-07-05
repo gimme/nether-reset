@@ -37,4 +37,4 @@ Some loot tables are supplemented with extra brewing ingredients that would othe
 - Piglin bartering has a higher chance of yielding Water Bottles
 
 
-![Logo](/images/logo.png)
+![Logo](images/logo.png)
